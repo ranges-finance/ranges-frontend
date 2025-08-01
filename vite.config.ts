@@ -7,7 +7,6 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import svgr from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-
 const OUT_DIR = "build";
 
 const getCommitHash = () => {
