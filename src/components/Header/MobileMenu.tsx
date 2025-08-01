@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { observer } from "mobx-react-lite";
 
 import { useStores } from "@stores";
@@ -10,7 +11,6 @@ import SizedBox from "../SizedBox";
 import { SmartFlex } from "../SmartFlex";
 
 import { MenuNav } from "./MenuNav";
-import WalletAddressButton from "./WalletAddressButton";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -19,13 +19,8 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = observer(({ isOpen, onAccountClick, onWalletConnect, onClose }) => {
+const MobileMenu: React.FC<MobileMenuProps> = observer(({ isOpen, onWalletConnect, onClose }) => {
   const { accountStore } = useStores();
-
-  const handleAccountClick = () => {
-    onAccountClick();
-    onClose();
-  };
 
   const handleConnectWallet = () => {
     onWalletConnect();
@@ -34,7 +29,7 @@ const MobileMenu: React.FC<MobileMenuProps> = observer(({ isOpen, onAccountClick
 
   const renderWalletAddressButton = () => {
     return accountStore.address ? (
-      <WalletAddressButtonStyled onClick={handleAccountClick} />
+      <ConnectButton />
     ) : (
       <Button green onClick={handleConnectWallet}>
         Connect wallet
@@ -81,9 +76,4 @@ const Container = styled(SmartFlex)`
 const FooterContainer = styled(SmartFlex)`
   margin-bottom: 48px;
   width: 100%;
-`;
-
-const WalletAddressButtonStyled = styled(WalletAddressButton)`
-  width: 100%;
-  height: 40px;
 `;

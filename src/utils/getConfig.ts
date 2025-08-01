@@ -1,5 +1,7 @@
 import assert from "assert";
 
+import { ethers } from "ethers";
+
 import TOKEN_LOGOS from "@constants/tokenLogos";
 
 import { Token } from "@entity";
@@ -45,6 +47,13 @@ function createConfig() {
     {} as Record<string, Token>,
   );
 
+  const RPC_URLS = {
+    MAINNET: "https://ethereum.publicnode.com",
+  };
+
+  // Создаем провайдер для основной сети
+  const mainnetProvider = new ethers.JsonRpcProvider(RPC_URLS.MAINNET);
+
   return {
     APP: configJSON,
     MARKETS: markets,
@@ -52,6 +61,10 @@ function createConfig() {
     TOKENS: tokens,
     TOKENS_BY_SYMBOL: tokensBySymbol,
     TOKENS_BY_ASSET_ID: tokensByAssetId,
+    RPC_URLS,
+    PROVIDERS: {
+      MAINNET: mainnetProvider,
+    },
   };
 }
 

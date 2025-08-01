@@ -1,6 +1,6 @@
 import { autorun, makeAutoObservable } from "mobx";
 
-import AccountStore, { SerializedAccountStore } from "@stores/AccountStore";
+import AccountStore from "@stores/AccountStore";
 
 import { saveState } from "@utils/localStorage";
 
@@ -8,9 +8,7 @@ import NotificationStore from "./NotificationStore";
 import OracleStore from "./OracleStore";
 import SwapStore from "./SwapStore";
 
-export interface SerializedRootStore {
-  accountStore?: SerializedAccountStore;
-}
+export interface SerializedRootStore {}
 
 export default class RootStore {
   static instance?: RootStore;
@@ -19,8 +17,8 @@ export default class RootStore {
   swapStore: SwapStore;
   notificationStore: NotificationStore;
 
-  private constructor(initState?: SerializedRootStore) {
-    this.accountStore = new AccountStore(this, initState?.accountStore);
+  private constructor(_initState?: SerializedRootStore) {
+    this.accountStore = new AccountStore(this);
     this.oracleStore = new OracleStore(this);
     this.swapStore = new SwapStore(this);
     this.notificationStore = new NotificationStore(this);
@@ -41,10 +39,6 @@ export default class RootStore {
 
     return RootStore.instance;
   };
-
-  get initialized() {
-    return this.accountStore.initialized;
-  }
 
   serialize = (): SerializedRootStore => ({
     accountStore: this.accountStore.serialize(),

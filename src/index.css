@@ -20,6 +20,11 @@ code {
   height: 100%;
 }
 
+#root > * {
+  width: 100% !important;
+}
+
+
 body.noscroll {
   overflow-y: hidden;
 }
@@ -102,3 +107,4 @@ body.noscroll {
     display: none;
   }
 }
+

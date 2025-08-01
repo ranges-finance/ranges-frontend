@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import styled from "@emotion/styled";
-import { usePrivy } from "@privy-io/react-auth";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { observer } from "mobx-react";
 
 import Button from "@components/Button";
+import { ConnectWalletButton } from "@components/ConnectWalletButton";
 import { media } from "@themes/breakpoints";
 
 import Logo from "@assets/icons/logo.svg?react";
@@ -12,21 +13,11 @@ import Menu from "@assets/icons/menu.svg?react";
 import useFlag from "@hooks/useFlag";
 import { useMedia } from "@hooks/useMedia";
 
-import { ConnectWalletButton } from "../ConnectWalletButton";
-import { AccountInfoSheet } from "../Modal";
 import { SmartFlex } from "../SmartFlex";
-import WalletButton from "../WalletButton";
-
-import { MenuNav } from "./MenuNav";
-import MobileMenu from "./MobileMenu";
-import WalletAddressButton from "./WalletAddressButton";
 
 const Header: React.FC = observer(() => {
-  const { login } = usePrivy();
   const media = useMedia();
-
   const [isMobileMenuOpen, openMobileMenu, closeMobileMenu] = useFlag();
-  const [isAccountInfoSheetOpen, openAccountInfo, closeAccountInfo] = useFlag();
 
   useEffect(() => {
     if (media.desktop) {
@@ -44,20 +35,14 @@ const Header: React.FC = observer(() => {
     }
   };
 
-  const openConnectModal = () => {
-    login();
-  };
-
   const renderWallet = () => {
     const dataOnboardingConnectKey = `connect-${media.mobile ? "mobile" : "desktop"}`;
-
-    const walletButtonContent = media.mobile ? <WalletAddressButton onClick={openAccountInfo} /> : <WalletButton />;
 
     return (
       <>
         <WalletContainer data-onboarding={dataOnboardingConnectKey} isVisible={!isMobileMenuOpen}>
           <ConnectWalletButton targetKey="header_connect_btn" data-connect-button fitContent>
-            {walletButtonContent}
+            <ConnectButton />
           </ConnectWalletButton>
         </WalletContainer>
       </>
@@ -90,9 +75,6 @@ const Header: React.FC = observer(() => {
             <LogoStyled />
           </a>
           <Divider />
-          <SmartFlex gap="28px">
-            <MenuNav />
-          </SmartFlex>
         </SmartFlex>
         <SmartFlex center="y" gap="16px">
           {renderWallet()}
@@ -101,18 +83,7 @@ const Header: React.FC = observer(() => {
     );
   };
 
-  return (
-    <Root>
-      {media.mobile ? renderMobile() : renderDesktop()}
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onAccountClick={openAccountInfo}
-        onClose={closeMobileMenu}
-        onWalletConnect={openConnectModal}
-      />
-      <AccountInfoSheet isOpen={isAccountInfoSheetOpen} onClose={closeAccountInfo} />
-    </Root>
-  );
+  return <Root>{media.mobile ? renderMobile() : renderDesktop()}</Root>;
 });
 
 export default Header;
