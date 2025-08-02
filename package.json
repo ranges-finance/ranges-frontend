@@ -2,13 +2,14 @@
   "name": "Cerera-frontend",
   "version": "0.0.1",
   "private": true,
-  "homepage": "",
+  "homepage": "https://chlenc.github.io/unite-defi-1inch-ethglobal",
   "scripts": {
     "start": "vite --open",
     "build": "vite build",
     "lint": "eslint --ext .tsx,.ts . --fix",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
+    "deploy:gh": "npm run build && gh-pages -d build",
     "prepare": "husky"
   },
   "engines": {

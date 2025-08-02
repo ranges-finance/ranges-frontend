@@ -10,7 +10,7 @@ import WalletIcon from "@assets/icons/wallet.svg?react";
 interface BalanceSectionProps {
   isLoaded: boolean | null;
   balance: string;
-  balanceUSD: number;
+  balanceUSD?: string;
   handleMaxAmount: () => void;
 }
 
@@ -19,7 +19,7 @@ export const BalanceSection = observer(({ isLoaded, balance, balanceUSD, handleM
 
   return (
     <Root>
-      <Text type="BODY">${balanceUSD.toFixed(2)}</Text>
+      <Text type="BODY">${balanceUSD ?? "-"}</Text>
       {isLoaded ? (
         <Balance onClick={handleMaxAmount}>
           <Text color={theme.colors.greenLight} type="BODY">

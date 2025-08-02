@@ -50,7 +50,6 @@ class OracleStore {
       {} as Record<string, string>,
     );
 
-    console.log(initPrices);
     this.setPrices(initPrices);
   };
 

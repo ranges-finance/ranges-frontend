@@ -12,7 +12,6 @@ const WalletAuth: React.FC = observer(() => {
   const { accountStore } = useStores();
 
   useEffect(() => {
-    console.log("address", chainId);
     accountStore.setAddress(address);
     accountStore.setIsConnected(isConnected);
     accountStore.setChainId(chainId);

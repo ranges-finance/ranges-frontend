@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { keyframes, useTheme } from "@emotion/react";
+import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
+import { useBalance } from "wagmi";
 
-import Button from "@components/Button";
 import { ConnectWalletButton } from "@components/ConnectWalletButton";
 import { AssetBlockData } from "@components/SelectAssets/SelectAssetsInput";
 import { SmartFlex } from "@components/SmartFlex";
@@ -17,7 +17,6 @@ import { useMedia } from "@hooks/useMedia";
 import { useWallet } from "@hooks/useWallet";
 import { useStores } from "@stores";
 
-import { DEFAULT_DECIMALS } from "@constants";
 import BN from "@utils/BN";
 import { isValidAmountInput, parseNumberWithCommas, replaceComma } from "@utils/swapUtils";
 
@@ -30,20 +29,19 @@ import { BalanceSection } from "./BalanceSection";
 import { TokenSelect } from "./TokenSelect";
 
 export const SwapScreen: React.FC = observer(() => {
-  const { swapStore, accountStore } = useStores();
+  const { swapStore, accountStore, oracleStore } = useStores();
   const { isConnected } = useWallet();
-  const theme = useTheme();
   const media = useMedia();
-
+  const { data } = useBalance({ address: accountStore.address });
+  const ethBalance = new BN(data?.formatted ?? "0");
   const [isLoading, setIsloading] = useState(false);
-  const [onPress, setOnPress] = useState(false);
   const tokens = swapStore.tokens;
 
-  const buyTokenPrice = swapStore.getPrice(swapStore.buyToken);
-  const sellTokenPrice = swapStore.getPrice(swapStore.sellToken);
-
-  const payAmountUSD = Number(parseNumberWithCommas(sellTokenPrice)) * Number(swapStore.payAmount);
-  const receiveAmountUSD = Number(parseNumberWithCommas(buyTokenPrice)) * Number(swapStore.receiveAmount);
+  const buyTokenPrice = oracleStore.getPriceBySymbol(swapStore.buyToken.symbol);
+  const receiveAmountUSD = buyTokenPrice
+    .times(parseNumberWithCommas(swapStore.receiveAmount))
+    .toSignificant(2)
+    .toString();
 
   const dataOnboardingSwapKey = `swap-${media.mobile ? "mobile" : "desktop"}`;
 
@@ -52,7 +50,6 @@ export const SwapScreen: React.FC = observer(() => {
   };
 
   const onPayAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOnPress(false);
     const newPayAmount = replaceComma(e.target.value);
 
     if (!isValidAmountInput(newPayAmount)) {
@@ -60,13 +57,9 @@ export const SwapScreen: React.FC = observer(() => {
     }
 
     swapStore.setPayAmount(newPayAmount);
-    const price = 0;
-    const receiveAmount = BN.parseUnits(new BN(newPayAmount).dividedBy(price), DEFAULT_DECIMALS);
-    swapStore.setReceiveAmount(receiveAmount.toFixed(swapStore.buyToken.decimals));
   };
 
   const onReceivedTokensChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOnPress(false);
     const newReceiveAmount = replaceComma(e.target.value);
 
     if (!isValidAmountInput(newReceiveAmount)) {
@@ -74,23 +67,18 @@ export const SwapScreen: React.FC = observer(() => {
     }
 
     swapStore.setReceiveAmount(newReceiveAmount);
-
-    const price = 0;
-    const payAmount = BN.parseUnits(new BN(newReceiveAmount).dividedBy(price), DEFAULT_DECIMALS);
-    swapStore.setPayAmount(payAmount.toFixed(swapStore.sellToken.decimals));
   };
 
   const fillPayAmount = () => {
-    setOnPress(true);
     const balance = "0"; //todo: get balance
     const newPayAmount = parseNumberWithCommas(balance.toString()).toFixed(swapStore.sellToken.decimals);
 
     swapStore.setPayAmount(newPayAmount);
 
-    const receiveAmount =
-      Number(newPayAmount) * (parseNumberWithCommas(sellTokenPrice) / parseNumberWithCommas(buyTokenPrice));
+    // const receiveAmount =
+    //   Number(newPayAmount) * (parseNumberWithCommas(sellTokenPrice) / parseNumberWithCommas(buyTokenPrice));
 
-    swapStore.setReceiveAmount(receiveAmount.toFixed(4));
+    // swapStore.setReceiveAmount(receiveAmount.toFixed(4));
   };
 
   const swapTokens = async () => {
@@ -107,8 +95,6 @@ export const SwapScreen: React.FC = observer(() => {
     }
   };
 
-  const balance = "0"; //todo: get balance
-  const isBalanceZero = Number(balance) === 0;
   const isLoaded = isConnected; //todo: && balanceStore.initialized;
 
   return (
@@ -125,13 +111,6 @@ export const SwapScreen: React.FC = observer(() => {
             <BoxHeader>
               <ActionContainer>
                 <Text type="TEXT">Sell</Text>
-                {isLoaded && !isBalanceZero && (
-                  <ActionTag onClick={fillPayAmount} onPress={onPress}>
-                    <Text color={theme.colors.textPrimary} type="BUTTON">
-                      Max
-                    </Text>
-                  </ActionTag>
-                )}
               </ActionContainer>
               <TokenSelect
                 assets={generateBalanceData(tokens)}
@@ -150,17 +129,9 @@ export const SwapScreen: React.FC = observer(() => {
               value={swapStore.payAmount}
               onChange={onPayAmountChange}
             />
-            {isLoaded && !isBalanceZero && (
-              <BalanceSection
-                balance="0" //todo: get balance
-                balanceUSD={payAmountUSD}
-                handleMaxAmount={fillPayAmount}
-                isLoaded={isLoaded}
-              />
-            )}
           </SwapBox>
 
-          <SwitchTokens disabled={false} isLoaded={isLoaded && !isBalanceZero} onClick={swapStore.onSwitchTokens}>
+          <SwitchTokens disabled={false} isLoaded={isLoaded} onClick={swapStore.onSwitchTokens}>
             <ArrowDownIcon />
           </SwitchTokens>
 
@@ -184,9 +155,9 @@ export const SwapScreen: React.FC = observer(() => {
               value={swapStore.receiveAmount}
               onChange={onReceivedTokensChange}
             />
-            {isLoaded && !isBalanceZero && (
+            {isLoaded && ethBalance.gt(0) && (
               <BalanceSection
-                balance="0" //todo: get balance
+                balance={ethBalance.toSignificant(4).toString()}
                 balanceUSD={receiveAmountUSD}
                 handleMaxAmount={fillPayAmount}
                 isLoaded={isLoaded}
@@ -200,7 +171,7 @@ export const SwapScreen: React.FC = observer(() => {
           <ConnectWalletButtonStyled connectText="Connect wallet to start trading" targetKey="swap_connect_btn">
             <SwapButton
               data-onboarding={dataOnboardingSwapKey}
-              disabled={!isConnected || !Number(swapStore.payAmount) || isBalanceZero} //todo || !balanceStore.initialized
+              disabled={!isConnected || !Number(swapStore.payAmount)} //todo || !balanceStore.initialized
               onClick={swapTokens}
             >
               <Text type="BUTTON_BIG">
@@ -309,23 +280,23 @@ const ActionContainer = styled.div`
   width: 100%;
 `;
 
-const ActionTag = styled(Button)<{ onPress: boolean }>`
-  padding: 5px !important;
-  height: auto !important;
-  width: auto !important;
-  background: ${({ onPress }) => (onPress ? "#535353" : "#53535326")};
-  border: none;
-  border-radius: 4px;
-  ${Text} {
-    color: ${({ theme, onPress }) => (onPress ? "white" : theme.colors.textSecondary)};
-  }
-  &:hover {
-    background: ${({ theme }) => theme.colors.textDisabled};
-    ${Text} {
-      color: ${({ theme }) => theme.colors.textPrimary};
-    }
-  }
-`;
+// const ActionTag = styled(Button)<{ onPress: boolean }>`
+//   padding: 5px !important;
+//   height: auto !important;
+//   width: auto !important;
+//   background: ${({ onPress }) => (onPress ? "#535353" : "#53535326")};
+//   border: none;
+//   border-radius: 4px;
+//   ${Text} {
+//     color: ${({ theme, onPress }) => (onPress ? "white" : theme.colors.textSecondary)};
+//   }
+//   &:hover {
+//     background: ${({ theme }) => theme.colors.textDisabled};
+//     ${Text} {
+//       color: ${({ theme }) => theme.colors.textPrimary};
+//     }
+//   }
+// `;
 
 const SwapInput = styled.input`
   border: none;

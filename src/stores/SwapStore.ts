@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 
 import { DEFAULT_DECIMALS } from "@constants";
 import BN from "@utils/BN";
-import { parseNumberWithCommas } from "@utils/swapUtils";
 
 import { Token } from "@entity";
 
@@ -22,7 +21,6 @@ class SwapStore {
     makeAutoObservable(this);
 
     this.tokens = this.rootStore.accountStore.tokens;
-    console.log(this.rootStore.accountStore.tokensBySymbol.BTC);
     this.sellToken = this.rootStore.accountStore.tokensBySymbol.BTC;
     this.buyToken = this.rootStore.accountStore.tokensBySymbol.ETH;
     this.payAmount = "0.00";
@@ -65,19 +63,16 @@ class SwapStore {
     return true;
   };
 
+  //todo: temporary disabled for a demo
   onSwitchTokens = () => {
-    const sellTokenPrice = parseNumberWithCommas(this.sellTokenPrice);
-    const buyTokenPrice = parseNumberWithCommas(this.buyTokenPrice);
-
-    const tempToken = { ...this.sellToken };
-
-    this.setSellToken(this.buyToken as Token);
-    this.setBuyToken(tempToken as Token);
-
-    this.setPayAmount(this.receiveAmount);
-
-    const newReceiveAmount = Number(this.receiveAmount) * (buyTokenPrice / sellTokenPrice);
-    this.setReceiveAmount(newReceiveAmount.toFixed(4));
+    // const sellTokenPrice = parseNumberWithCommas(this.sellTokenPrice);
+    // const buyTokenPrice = parseNumberWithCommas(this.buyTokenPrice);
+    // const tempToken = { ...this.sellToken };
+    // this.setSellToken(this.buyToken as Token);
+    // this.setBuyToken(tempToken as Token);
+    // this.setPayAmount(this.receiveAmount);
+    // const newReceiveAmount = Number(this.receiveAmount) * (buyTokenPrice / sellTokenPrice);
+    // this.setReceiveAmount(newReceiveAmount.toFixed(4));
   };
 
   setSellToken(token: Token) {
@@ -94,15 +89,24 @@ class SwapStore {
     this.payAmount = value;
     const buyTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
     const sellTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.sellToken.symbol);
-    console.log(buyTokenPrice.times(value).div(sellTokenPrice).toString());
-    this.receiveAmount = buyTokenPrice.times(value).div(sellTokenPrice).toString();
+
+    let receiveAmount = "0";
+    if (buyTokenPrice.gt(0)) {
+      receiveAmount = sellTokenPrice.times(value).div(buyTokenPrice).toString();
+    }
+    this.receiveAmount = receiveAmount;
   }
 
   setReceiveAmount(value: string) {
     this.receiveAmount = value;
     const buyTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
     const sellTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.sellToken.symbol);
-    this.payAmount = sellTokenPrice.times(value).div(buyTokenPrice).toString();
+
+    let payAmount = "0";
+    if (sellTokenPrice.gt(0)) {
+      payAmount = buyTokenPrice.times(value).div(sellTokenPrice).toString();
+    }
+    this.payAmount = payAmount;
   }
 }
 
