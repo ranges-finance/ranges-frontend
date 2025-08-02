@@ -4,7 +4,9 @@ import type { Config } from "wagmi";
 import { AssetBlockData } from "@components/SelectAssets/SelectAssetsInput";
 
 import { NetworkConfig } from "@constants/networkConfig";
-import { CONFIG } from "@utils/getConfig";
+import TOKEN_LOGOS from "@constants/tokenLogos";
+
+import { Token } from "@entity";
 
 import RootStore from "./RootStore";
 
@@ -13,7 +15,7 @@ class AccountStore {
   address?: `0x${string}`;
   isConnected: boolean = false;
   isProcessing: boolean = false;
-  chainId: number | null = null;
+  chainId: number | null = NetworkConfig.ethereum.chainId;
   wagmiConfig: Config | null = null;
 
   isAuthenticating: boolean = false;
@@ -36,17 +38,51 @@ class AccountStore {
   }
 
   get formattedBalanceInfoList(): AssetBlockData[] {
-    const tokens = CONFIG.TOKENS;
+    const tokens = this.tokens;
 
     return tokens.map((token) => {
       return {
         assetId: token.assetId,
         asset: token,
         balance: "0", //todo: get balance
-        price: "0", //todo: get price
+        price: this.rootStore.oracleStore.getTokenIndexPrice(token.priceFeed).toString(),
       };
     });
   }
+
+  get tokens() {
+    return (
+      this.networkConfig?.tokens.map(
+        (token) =>
+          new Token({
+            name: token.symbol,
+            symbol: token.symbol,
+            decimals: token.decimals,
+            assetId: token.symbol,
+            logo: TOKEN_LOGOS[token.symbol],
+            priceFeed: token.priceFeed ?? "",
+          }),
+      ) ?? []
+    );
+  }
+
+  get tokensBySymbol() {
+    return this.tokens.reduce(
+      (acc, token) => {
+        acc[token.symbol] = token;
+        return acc;
+      },
+      {} as Record<string, Token>,
+    );
+  }
+
+  getExplorerLinkByHash = (hash: string) => {
+    return `${this.networkConfig?.explorer}/tx/${hash}`;
+  };
+
+  getExplorerLinkByAddress = (address: string) => {
+    return `${this.networkConfig?.explorer}/account/${address}`;
+  };
 
   serialize = () => ({});
 }

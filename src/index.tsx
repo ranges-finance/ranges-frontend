@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { HashRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { darkTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -53,10 +52,8 @@ root.render(
             modalSize="compact"
             theme={RainbowKitTheme}
           >
-            <Router>
-              <App />
-              <WalletAuth />
-            </Router>
+            <App />
+            <WalletAuth />
           </RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>

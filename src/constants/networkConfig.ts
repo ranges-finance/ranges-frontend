@@ -11,7 +11,7 @@ export const COINS = {
   BTC: "BTC",
 } as const;
 
-type TokenConfig = {
+export type TokenConfig = {
   symbol: string;
   decimals: number;
   address?: `0x${string}`;
@@ -47,7 +47,7 @@ export const NetworkConfig: Record<string, NetworkConfig> = {
         symbol: COINS.BTC,
         decimals: 6,
         address: "0xA7e32df83540e02A0E19f9B8CccE10F183Ce0b53",
-        priceFeed: "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+        priceFeed: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
       },
     ],
   },
@@ -68,7 +68,7 @@ export const NetworkConfig: Record<string, NetworkConfig> = {
         symbol: COINS.BTC,
         decimals: 6,
         address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-        priceFeed: "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+        priceFeed: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
       },
     ],
   },
@@ -88,7 +88,7 @@ export const NetworkConfig: Record<string, NetworkConfig> = {
         symbol: COINS.BTC,
         decimals: 8,
         address: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
-        priceFeed: "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+        priceFeed: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
       },
     ],
   },

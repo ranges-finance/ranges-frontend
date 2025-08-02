@@ -76,13 +76,13 @@ export const TokenSelect: React.FC<TokenSelectProps> = ({
             </OptionsHeader>
             {filteredItem.length > 0 ? (
               filteredItem.map((v, index) => {
-                const active = selectedOption.assetId === v.assetId;
+                const active = selectedOption?.assetId === v.assetId;
                 return (
-                  <>
+                  <React.Fragment key={v.assetId + "_option"}>
                     <Option key={v.assetId + "_option"} active={active} onClick={() => handleSelectClick(v, index)}>
                       <AssetBlock key={v.assetId} options={{ showBalance }} token={v} />
                     </Option>
-                  </>
+                  </React.Fragment>
                 );
               })
             ) : (

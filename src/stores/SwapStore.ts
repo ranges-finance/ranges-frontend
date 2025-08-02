@@ -1,8 +1,7 @@
-import { autorun, makeAutoObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 import { DEFAULT_DECIMALS } from "@constants";
 import BN from "@utils/BN";
-import { CONFIG } from "@utils/getConfig";
 import { parseNumberWithCommas } from "@utils/swapUtils";
 
 import { Token } from "@entity";
@@ -22,18 +21,19 @@ class SwapStore {
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
 
-    this.tokens = this.fetchNewTokens();
-    this.sellToken = this.tokens[0];
-    this.buyToken = this.tokens[1];
+    this.tokens = this.rootStore.accountStore.tokens;
+    console.log(this.rootStore.accountStore.tokensBySymbol.BTC);
+    this.sellToken = this.rootStore.accountStore.tokensBySymbol.BTC;
+    this.buyToken = this.rootStore.accountStore.tokensBySymbol.ETH;
     this.payAmount = "0.00";
     this.receiveAmount = "0.00";
 
     this.buyTokenPrice = this.getPrice(this.buyToken);
     this.sellTokenPrice = this.getPrice(this.sellToken);
 
-    autorun(async () => {
-      await this.initialize();
-    });
+    // autorun(async () => {
+    //   await this.initialize();
+    // });
   }
 
   async initialize() {
@@ -54,26 +54,11 @@ class SwapStore {
   getMarketPair = (_baseAsset: Token, _quoteToken: Token) => {};
 
   updateTokens() {
-    const newTokens = this.fetchNewTokens();
-    this.tokens = newTokens;
-    this.sellToken = newTokens.find((el) => el.assetId === this.sellToken.assetId) ?? newTokens[0];
-    this.buyToken = newTokens.find((el) => el.assetId === this.buyToken.assetId) ?? newTokens[1];
+    this.tokens = this.rootStore.accountStore.tokens;
+    this.setSellToken(this.tokens.find((el) => el.assetId === this.sellToken.assetId) ?? this.tokens[0]);
+    this.setBuyToken(this.tokens.find((el) => el.assetId === this.buyToken.assetId) ?? this.tokens[1]);
     this.buyTokenPrice = this.getPrice(this.buyToken);
     this.sellTokenPrice = this.getPrice(this.sellToken);
-  }
-
-  fetchNewTokens(): Token[] {
-    return CONFIG.TOKENS.map((v) => {
-      const token = CONFIG.TOKENS_BY_ASSET_ID[v.assetId];
-      return {
-        name: token.name,
-        symbol: token.symbol,
-        logo: token.logo,
-        priceFeed: token.priceFeed,
-        assetId: token.assetId,
-        decimals: token.decimals,
-      };
-    });
   }
 
   swapTokens = async ({ slippage: _slippage }: { slippage: number }): Promise<boolean> => {
@@ -107,10 +92,17 @@ class SwapStore {
 
   setPayAmount(value: string) {
     this.payAmount = value;
+    const buyTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
+    const sellTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.sellToken.symbol);
+    console.log(buyTokenPrice.times(value).div(sellTokenPrice).toString());
+    this.receiveAmount = buyTokenPrice.times(value).div(sellTokenPrice).toString();
   }
 
   setReceiveAmount(value: string) {
     this.receiveAmount = value;
+    const buyTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
+    const sellTokenPrice = this.rootStore.oracleStore.getPriceBySymbol(this.sellToken.symbol);
+    this.payAmount = sellTokenPrice.times(value).div(buyTokenPrice).toString();
   }
 }
 

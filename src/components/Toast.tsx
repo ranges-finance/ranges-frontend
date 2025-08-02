@@ -9,7 +9,7 @@ import InfoIcon from "@assets/icons/info.svg?react";
 import SuccessIcon from "@assets/icons/success.svg?react";
 import WarningIcon from "@assets/icons/warning.svg?react";
 
-import { getExplorerLinkByAddress, getExplorerLinkByHash } from "@utils/getExplorerLink";
+import { useStores } from "@stores";
 
 import { SmartFlex } from "./SmartFlex";
 import Text, { TEXT_TYPES_MAP } from "./Text";
@@ -25,12 +25,12 @@ interface Props extends ToastContentProps<unknown>, NotificationProps {}
 
 const Toast: React.FC<Props> = ({ text, error, hash, address, toastProps }) => {
   const { type, closeToast } = toastProps;
-
+  const { accountStore } = useStores();
   let link = null;
   if (hash) {
-    link = getExplorerLinkByHash(hash);
+    link = accountStore.getExplorerLinkByHash(hash);
   } else if (address) {
-    link = getExplorerLinkByAddress(address);
+    link = accountStore.getExplorerLinkByAddress(address);
   }
 
   const Icon = type === "success" ? SuccessIcon : type === "info" ? InfoIcon : WarningIcon;

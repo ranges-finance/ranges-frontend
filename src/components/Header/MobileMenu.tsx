@@ -29,7 +29,7 @@ const MobileMenu: React.FC<MobileMenuProps> = observer(({ isOpen, onWalletConnec
 
   const renderWalletAddressButton = () => {
     return accountStore.address ? (
-      <ConnectButton />
+      <ConnectButton showBalance={true} />
     ) : (
       <Button green onClick={handleConnectWallet}>
         Connect wallet

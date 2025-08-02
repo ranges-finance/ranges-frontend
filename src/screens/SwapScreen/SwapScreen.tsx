@@ -37,7 +37,7 @@ export const SwapScreen: React.FC = observer(() => {
 
   const [isLoading, setIsloading] = useState(false);
   const [onPress, setOnPress] = useState(false);
-  const tokens = swapStore.fetchNewTokens();
+  const tokens = swapStore.tokens;
 
   const buyTokenPrice = swapStore.getPrice(swapStore.buyToken);
   const sellTokenPrice = swapStore.getPrice(swapStore.sellToken);

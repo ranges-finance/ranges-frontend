@@ -4,7 +4,6 @@ import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 
 import BN from "@utils/BN";
-import { CONFIG } from "@utils/getConfig";
 import { IntervalUpdater } from "@utils/IntervalUpdater";
 
 const PYTH_URL = "https://hermes.pyth.network";
@@ -36,9 +35,9 @@ class OracleStore {
   private initAndGetPythPrices = async () => {
     // You can find the ids of prices at https://pyth.network/developers/price-feed-ids
 
-    const priceIds = CONFIG.TOKENS.filter((t) => t.priceFeed.toLowerCase() !== zeroFeedId.toLowerCase()).map(
-      (t) => t.priceFeed,
-    );
+    const priceIds = this.rootStore.accountStore.tokens
+      .filter((t) => t.priceFeed?.toLowerCase() !== zeroFeedId.toLowerCase())
+      .map((t) => t.priceFeed ?? "");
 
     const response = await this.priceServiceConnection.getLatestPriceUpdates(priceIds, { parsed: true });
 
@@ -51,6 +50,7 @@ class OracleStore {
       {} as Record<string, string>,
     );
 
+    console.log(initPrices);
     this.setPrices(initPrices);
   };
 
@@ -65,6 +65,11 @@ class OracleStore {
 
     // Нам нужно докидывать 1 decimal, потому что decimals разный в api и у нас
     return BN.parseUnits(priceBN, 1);
+  };
+
+  getPriceBySymbol = (symbol: string): BN => {
+    const token = this.rootStore.accountStore.tokensBySymbol[symbol];
+    return BN.formatUnits(this.getTokenIndexPrice(token.priceFeed ?? ""), 9);
   };
 
   private setPrices = (v: Record<string, string>) => (this.prices = v);

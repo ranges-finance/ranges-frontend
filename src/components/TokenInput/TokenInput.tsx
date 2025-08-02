@@ -7,13 +7,12 @@ import Text, { TEXT_TYPES_MAP } from "@components/Text";
 import { media } from "@themes/breakpoints";
 
 import BN from "@utils/BN";
-import { CONFIG } from "@utils/getConfig";
 
 import AmountInput from "./AmountInput";
 import { BigNumberInput } from "./BigNumberInput";
 
 interface TokenInputProps {
-  assetId?: string;
+  symbol?: string;
   decimals: number;
   displayDecimals?: number;
   label?: string;
@@ -83,7 +82,7 @@ const TokenInput: React.FC<TokenInputProps> = observer((props) => {
           value={amount}
           onChange={handleChangeAmount}
         />
-        {props.assetId && <Chip>{CONFIG.TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>}
+        {props.symbol && <Chip>{props.symbol}</Chip>}
         {props.isShowMax && <Chip onClick={props.handleMaxBalance}>MAX</Chip>}
       </InputContainer>
       {props.error && props.errorMessage && <ErrorText attention>{props.errorMessage}</ErrorText>}
