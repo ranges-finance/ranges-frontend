@@ -41,10 +41,11 @@ class AccountStore {
     const tokens = this.tokens;
 
     return tokens.map((token) => {
+      const balance = this.rootStore.balanceStore.getFormattedBalance(token.symbol);
       return {
         assetId: token.assetId,
         asset: token,
-        balance: "0", //todo: get balance
+        balance: balance,
         price: this.rootStore.oracleStore.getTokenIndexPrice(token.priceFeed).toString(),
       };
     });

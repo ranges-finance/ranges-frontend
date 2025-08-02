@@ -96,9 +96,7 @@ export const SwapScreen: React.FC = observer(() => {
                 selectedOption={generateBalanceData([swapStore.sellToken])[0]}
                 showBalance="balance"
                 type="rounded"
-                onSelect={(_item) => {
-                  //todo: handle change sell token
-                }}
+                onSelect={(item) => item.asset.symbol !== swapStore.sellToken.symbol && swapStore.onSwitchTokens()}
               />
             </BoxHeader>
             <SwapInput
@@ -122,9 +120,7 @@ export const SwapScreen: React.FC = observer(() => {
                 selectedOption={generateBalanceData([swapStore.buyToken])[0]}
                 showBalance="balance"
                 type="rounded"
-                onSelect={(_item) => {
-                  //todo: handle change buy token
-                }}
+                onSelect={(item) => item.asset.symbol !== swapStore.buyToken.symbol && swapStore.onSwitchTokens()}
               />
             </BoxHeader>
             <SwapInput
@@ -150,7 +146,7 @@ export const SwapScreen: React.FC = observer(() => {
           <ConnectWalletButtonStyled connectText="Connect wallet to start trading" targetKey="swap_connect_btn">
             <SwapButton
               data-onboarding={dataOnboardingSwapKey}
-              disabled={!isConnected || !Number(swapStore.payAmount)} //todo || !balanceStore.initialized
+              disabled={!isConnected} //todo || !balanceStore.initialized
               onClick={swapStore.swapTokens}
             >
               <Text type="BUTTON_BIG">
@@ -158,8 +154,10 @@ export const SwapScreen: React.FC = observer(() => {
                   <>
                     <Spinner height={14} /> Processing
                   </>
-                ) : (
+                ) : !swapStore.isSellEth ? (
                   `Swap ${swapStore.sellToken.symbol} to ${swapStore.buyToken.symbol}`
+                ) : (
+                  `Attach invoice`
                 )}
               </Text>
             </SwapButton>

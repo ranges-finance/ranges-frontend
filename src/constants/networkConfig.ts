@@ -24,6 +24,7 @@ type NetworkConfig = {
   title?: string;
   chainId: number;
   rpc: string;
+  contractAddress: `0x${string}`;
   testnet?: boolean;
   tokens: TokenConfig[];
   explorer: string;
@@ -31,9 +32,31 @@ type NetworkConfig = {
 
 //price feeds https://www.pyth.network/developers/price-feed-ids
 export const NetworkConfig: Record<string, NetworkConfig> = {
+  polygon: {
+    name: NETWORKS.POLYGON,
+    chainId: 137,
+    rpc: "https://polygon-rpc.com",
+    explorer: "https://polygonscan.com",
+    contractAddress: "0x20F0Fee5622B6719B3D095665FdeD507352c29Fa",
+    tokens: [
+      {
+        symbol: COINS.ETH,
+        decimals: 18,
+        isNative: true,
+        priceFeed: "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
+      },
+      {
+        symbol: COINS.BTC,
+        decimals: 8,
+        address: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+        priceFeed: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+      },
+    ],
+  },
   sepolia: {
     name: NETWORKS.SEPOLIA,
     chainId: 11155111,
+    contractAddress: "0x...",
     rpc: "https://ethereum-sepolia.publicnode.com",
     explorer: "https://sepolia.etherscan.io",
     tokens: [
@@ -55,6 +78,7 @@ export const NetworkConfig: Record<string, NetworkConfig> = {
   ethereum: {
     name: NETWORKS.ETHEREUM,
     chainId: 1,
+    contractAddress: "0x...",
     rpc: "https://ethereum.publicnode.com",
     explorer: "https://etherscan.io",
     tokens: [
@@ -68,26 +92,6 @@ export const NetworkConfig: Record<string, NetworkConfig> = {
         symbol: COINS.BTC,
         decimals: 6,
         address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-        priceFeed: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
-      },
-    ],
-  },
-  polygon: {
-    name: NETWORKS.POLYGON,
-    chainId: 137,
-    rpc: "https://polygon-rpc.com",
-    explorer: "https://polygonscan.com",
-    tokens: [
-      {
-        symbol: COINS.ETH,
-        decimals: 18,
-        isNative: true,
-        priceFeed: "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
-      },
-      {
-        symbol: COINS.BTC,
-        decimals: 8,
-        address: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
         priceFeed: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
       },
     ],

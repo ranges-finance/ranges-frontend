@@ -10,6 +10,14 @@ export interface SwapResponse {
   lightningNetworkInvoice: `lnbc${string}`;
 }
 
+export interface SubmitInvoiceRequest {
+  invoice: string;
+}
+
+export interface SubmitInvoiceResponse {
+  address: `0x${string}`;
+}
+
 export interface SwapDetails {
   amountBtc: string;
   amountEth: string;
@@ -27,9 +35,10 @@ class ApiService {
   }
 
   async createSwap(data: SwapRequest): Promise<SwapResponse> {
-    // return {
-    //   lightningNetworkInvoice: "lnbc1p5guh9mpp595cvfk0w2ukvqcv5zx42ueavdsf9upwyludagx3t8d4ewa56ukescqzyssp538lm5f087tcl3cucvkduj4ddpl6pakf6qps5wyjwsnw5hcxdvkwq9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcll7nnxyg55elr5qqqqlgqqqqqeqqjqyyagtvgpurspzvtucumgke6fhdlku02j75ataxlh2f05ze9ewrzxfadjzth99t4g56azz0uvjngpxhzeuueaqhl6m086vm29h94ak7spdq7yap",
-    // };
+    return {
+      lightningNetworkInvoice:
+        "lnbc1p5guh9mpp595cvfk0w2ukvqcv5zx42ueavdsf9upwyludagx3t8d4ewa56ukescqzyssp538lm5f087tcl3cucvkduj4ddpl6pakf6qps5wyjwsnw5hcxdvkwq9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcll7nnxyg55elr5qqqqlgqqqqqeqqjqyyagtvgpurspzvtucumgke6fhdlku02j75ataxlh2f05ze9ewrzxfadjzth99t4g56azz0uvjngpxhzeuueaqhl6m086vm29h94ak7spdq7yap",
+    };
     try {
       const response = await fetch(`${this.baseUrl}/swap`, {
         method: "POST",
@@ -50,14 +59,36 @@ class ApiService {
     }
   }
 
+  async submitInvoice(data: SubmitInvoiceRequest): Promise<SubmitInvoiceResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/submitInvoice`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error submitting invoice:", error);
+      throw error;
+    }
+  }
+
   async getSwap(id: string): Promise<SwapDetails> {
-    // return {
-    //   amountBtc: "0.0001",
-    //   amountEth: "0.0033037431354917452",
-    //   ethAddress: "0x8538B9F22FE51bD16Fa6Eab6a840FA8bf12dd227",
-    //   btcLightningNetInvoice: "lnbc100u1p5guy6ypp5eeyft8ntelam75uvpnz8lcx46qpp5aa6a4rrvc2qtc74qaz8776scqzyssp5us7lxaq6xny2e85sjfxa6dttua7v0ag32q2huzue5m67czzj5nes9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllmqlf20lk5u3sqqqqlgqqqqqeqqjqr4dqnmedj6pz9jvh2ufw0v0grfa27khg7tfwvun8u9fcxg952ua5zed68d2naa6whng33z7qnvt8x5x07lzf6lchegvr70xsrjmk8uqpsjef9k",
-    //   status: "completed",
-    // };
+    return {
+      amountBtc: "0.0001",
+      amountEth: "0.0033037431354917452",
+      ethAddress: "0x8538B9F22FE51bD16Fa6Eab6a840FA8bf12dd227",
+      btcLightningNetInvoice:
+        "lnbc100u1p5guy6ypp5eeyft8ntelam75uvpnz8lcx46qpp5aa6a4rrvc2qtc74qaz8776scqzyssp5us7lxaq6xny2e85sjfxa6dttua7v0ag32q2huzue5m67czzj5nes9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllmqlf20lk5u3sqqqqlgqqqqqeqqjqr4dqnmedj6pz9jvh2ufw0v0grfa27khg7tfwvun8u9fcxg952ua5zed68d2naa6whng33z7qnvt8x5x07lzf6lchegvr70xsrjmk8uqpsjef9k",
+      status: "waiting_btc_payment",
+    };
     try {
       const response = await fetch(`${this.baseUrl}/swap/${id}`, {
         method: "GET",

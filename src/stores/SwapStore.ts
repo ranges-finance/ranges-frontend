@@ -2,7 +2,8 @@ import { toast } from "react-toastify";
 import * as bolt11 from "bolt11";
 import { makeAutoObservable } from "mobx";
 
-import { apiService } from "@utils/api";
+import { COINS } from "@constants/networkConfig";
+import { apiService, SwapDetails } from "@utils/api";
 
 import { Token } from "@entity";
 
@@ -15,9 +16,8 @@ interface InvoiceDetails {
   payment_secret?: string;
   payment_hash?: string;
   encoded: string;
-  status?: "waiting_btc_payment" | "waiting_eth_payment" | "processing" | "completed" | "expired";
-  txId?: string;
 }
+
 class SwapStore {
   tokens: Token[];
   sellToken: Token;
@@ -28,7 +28,7 @@ class SwapStore {
   modalOpen: boolean = false;
   isLoading: boolean = false;
   invoice: InvoiceDetails | null = null;
-
+  swapDetails: SwapDetails | null = null;
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
 
@@ -42,7 +42,7 @@ class SwapStore {
       if (this.invoice && this.invoice.payment_hash) {
         apiService
           .getSwap(this.invoice.payment_hash)
-          .then(({ status, txId }) => this.invoice && this.setInvoice({ ...this.invoice, status, txId }));
+          .then(({ status, txId }) => this.swapDetails && this.setSwapDetails({ ...this.swapDetails, status, txId }));
       }
     }, 1000);
   }
@@ -54,6 +54,26 @@ class SwapStore {
     return this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
   }
 
+  private swapTokensBtcEth = async () => {
+    if (!this.rootStore.accountStore.address) return;
+    const { lightningNetworkInvoice } = await apiService.createSwap({
+      amountBtc: this.payAmount,
+      amountEth: this.receiveAmount,
+      ethAddress: this.rootStore.accountStore.address,
+    });
+    this.setInvoice(lightningNetworkInvoice);
+    apiService.getSwap(lightningNetworkInvoice).then((swapDetails) => this.setSwapDetails(swapDetails));
+  };
+
+  attachInvoice = async (invoice: string) => {
+    try {
+      this.setInvoice(invoice);
+    } catch (err) {
+      console.error("er", err);
+      toast.error("Error attaching invoice");
+    }
+  };
+
   swapTokens = async () => {
     if (!this.rootStore.accountStore.address) return;
 
@@ -64,31 +84,7 @@ class SwapStore {
     this.setIsLoading(true);
     this.setModalOpen(true);
     try {
-      const { lightningNetworkInvoice } = await apiService.createSwap({
-        amountBtc: this.payAmount,
-        amountEth: this.receiveAmount,
-        ethAddress: this.rootStore.accountStore.address,
-      });
-
-      const decoded = bolt11.decode(lightningNetworkInvoice);
-      console.log(decoded);
-      // Extract required fields from decoded invoice
-      const timeExpireDate = decoded.timeExpireDate;
-      const complete = decoded.complete;
-      const satoshis = decoded.satoshis;
-      // Find tags by name
-      const payment_secret = decoded.tags.find((tag) => tag.tagName === "payment_secret")?.data as string;
-      const payment_hash = decoded.tags.find((tag) => tag.tagName === "payment_hash")?.data as string;
-
-      this.setInvoice({
-        timeExpireDate,
-        complete,
-        satoshis,
-        payment_secret,
-        payment_hash,
-        encoded: lightningNetworkInvoice,
-      });
-      console.log(timeExpireDate, complete, satoshis, payment_secret, payment_hash);
+      if (!this.isSellEth) this.swapTokensBtcEth();
     } catch (err) {
       console.error("er", err);
       toast.error("Error creating swap");
@@ -98,22 +94,55 @@ class SwapStore {
     }
   };
 
-  //todo: temporary disabled for a demo
+  get isSellEth() {
+    return this.sellToken.symbol === COINS.ETH;
+  }
+
   onSwitchTokens = () => {
-    // const sellTokenPrice = parseNumberWithCommas(this.sellTokenPrice);
-    // const buyTokenPrice = parseNumberWithCommas(this.buyTokenPrice);
-    // const tempToken = { ...this.sellToken };
-    // this.setSellToken(this.buyToken as Token);
-    // this.setBuyToken(tempToken as Token);
-    // this.setPayAmount(this.receiveAmount);
-    // const newReceiveAmount = Number(this.receiveAmount) * (buyTokenPrice / sellTokenPrice);
-    // this.setReceiveAmount(newReceiveAmount.toFixed(4));
+    const tempToken = { ...this.sellToken };
+    this.setSellToken(this.buyToken as Token);
+    this.setBuyToken(tempToken as Token);
+    this.setPayAmount("0.00");
+  };
+
+  cancelOrder = () => {
+    this.setInvoice(null);
+    this.setModalOpen(false);
+    this.setIsLoading(false);
   };
 
   setModalOpen = (value: boolean) => (this.modalOpen = value);
   setIsLoading = (value: boolean) => (this.isLoading = value);
-  setInvoice(invoice: InvoiceDetails) {
-    this.invoice = invoice;
+
+  setSwapDetails(swapDetails: SwapDetails | null) {
+    this.swapDetails = swapDetails;
+  }
+
+  setInvoice(invoice: string | null) {
+    if (invoice === null) {
+      this.invoice = null;
+      this.setSwapDetails(null);
+      return;
+    }
+
+    const decoded = bolt11.decode(invoice);
+    console.log(decoded);
+    // Extract required fields from decoded invoice
+    const timeExpireDate = decoded.timeExpireDate;
+    const complete = decoded.complete;
+    const satoshis = decoded.satoshis;
+    // Find tags by name
+    const payment_secret = decoded.tags.find((tag) => tag.tagName === "payment_secret")?.data as string;
+    const payment_hash = decoded.tags.find((tag) => tag.tagName === "payment_hash")?.data as string;
+
+    this.invoice = {
+      timeExpireDate,
+      complete,
+      satoshis,
+      payment_secret,
+      payment_hash,
+      encoded: invoice,
+    };
   }
 
   setSellToken(token: Token) {
