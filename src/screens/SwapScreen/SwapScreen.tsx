@@ -53,9 +53,7 @@ export const SwapScreen: React.FC = observer(() => {
     if (swapStore.isLoading) return;
     const newPayAmount = replaceComma(e.target.value);
 
-    if (!isValidAmountInput(newPayAmount)) {
-      return;
-    }
+    if (!isValidAmountInput(newPayAmount)) return;
 
     swapStore.setPayAmount(newPayAmount);
   };
@@ -64,9 +62,7 @@ export const SwapScreen: React.FC = observer(() => {
     if (swapStore.isLoading) return;
     const newReceiveAmount = replaceComma(e.target.value);
 
-    if (!isValidAmountInput(newReceiveAmount)) {
-      return;
-    }
+    if (!isValidAmountInput(newReceiveAmount)) return;
 
     swapStore.setReceiveAmount(newReceiveAmount);
   };
@@ -76,23 +72,6 @@ export const SwapScreen: React.FC = observer(() => {
     const newPayAmount = parseNumberWithCommas(balance.toString()).toFixed(swapStore.sellToken.decimals);
 
     swapStore.setPayAmount(newPayAmount);
-
-    // const receiveAmount =
-    //   Number(newPayAmount) * (parseNumberWithCommas(sellTokenPrice) / parseNumberWithCommas(buyTokenPrice));
-
-    // swapStore.setReceiveAmount(receiveAmount.toFixed(4));
-  };
-
-  const swapTokens = async () => {
-    swapStore.setIsLoading(true);
-    try {
-      //todo: swap tokens
-      swapStore.setModalOpen(true);
-      // setIsloading(false);
-    } catch (err) {
-      swapStore.setIsLoading(false);
-      console.error("er", err);
-    }
   };
 
   const isLoaded = isConnected; //todo: && balanceStore.initialized;
@@ -172,7 +151,7 @@ export const SwapScreen: React.FC = observer(() => {
             <SwapButton
               data-onboarding={dataOnboardingSwapKey}
               disabled={!isConnected || !Number(swapStore.payAmount)} //todo || !balanceStore.initialized
-              onClick={swapTokens}
+              onClick={swapStore.swapTokens}
             >
               <Text type="BUTTON_BIG">
                 {swapStore.isLoading ? (

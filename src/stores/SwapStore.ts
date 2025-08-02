@@ -1,12 +1,23 @@
+import { toast } from "react-toastify";
+import * as bolt11 from "bolt11";
 import { makeAutoObservable } from "mobx";
 
-import { DEFAULT_DECIMALS } from "@constants";
-import BN from "@utils/BN";
+import { apiService } from "@utils/api";
 
 import { Token } from "@entity";
 
 import RootStore from "./RootStore";
 
+interface InvoiceDetails {
+  timeExpireDate?: number;
+  complete?: boolean;
+  satoshis?: number | null;
+  payment_secret?: string;
+  payment_hash?: string;
+  encoded: string;
+  status?: "waiting_btc_payment" | "waiting_eth_payment" | "processing" | "completed" | "expired";
+  txId?: string;
+}
 class SwapStore {
   tokens: Token[];
   sellToken: Token;
@@ -16,6 +27,8 @@ class SwapStore {
   receiveAmount: string;
   modalOpen: boolean = false;
   isLoading: boolean = false;
+  invoice: InvoiceDetails | null = null;
+
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
 
@@ -25,9 +38,13 @@ class SwapStore {
     this.payAmount = "0.00";
     this.receiveAmount = "0.00";
 
-    // autorun(async () => {
-    //   await this.initialize();
-    // });
+    setInterval(() => {
+      if (this.invoice && this.invoice.payment_hash) {
+        apiService
+          .getSwap(this.invoice.payment_hash)
+          .then(({ status, txId }) => this.invoice && this.setInvoice({ ...this.invoice, status, txId }));
+      }
+    }, 1000);
   }
 
   get sellTokenPrice() {
@@ -37,33 +54,48 @@ class SwapStore {
     return this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
   }
 
-  async initialize() {
-    this.updateTokens();
-  }
+  swapTokens = async () => {
+    if (!this.rootStore.accountStore.address) return;
 
-  setModalOpen = (value: boolean) => (this.modalOpen = value);
-  setIsLoading = (value: boolean) => (this.isLoading = value);
-  isBuy = () => {};
+    if (this.isLoading) {
+      this.setModalOpen(true);
+      return;
+    }
+    this.setIsLoading(true);
+    this.setModalOpen(true);
+    try {
+      const { lightningNetworkInvoice } = await apiService.createSwap({
+        amountBtc: this.payAmount,
+        amountEth: this.receiveAmount,
+        ethAddress: this.rootStore.accountStore.address,
+      });
 
-  getTokenPair = (_assetId: string) => {};
+      const decoded = bolt11.decode(lightningNetworkInvoice);
+      console.log(decoded);
+      // Extract required fields from decoded invoice
+      const timeExpireDate = decoded.timeExpireDate;
+      const complete = decoded.complete;
+      const satoshis = decoded.satoshis;
+      // Find tags by name
+      const payment_secret = decoded.tags.find((tag) => tag.tagName === "payment_secret")?.data as string;
+      const payment_hash = decoded.tags.find((tag) => tag.tagName === "payment_hash")?.data as string;
 
-  getPrice(token: Token): string {
-    const { oracleStore } = this.rootStore;
-    return token.priceFeed
-      ? BN.formatUnits(oracleStore.getTokenIndexPrice(token.priceFeed), DEFAULT_DECIMALS).toFormat(2)
-      : "0";
-  }
-
-  getMarketPair = (_baseAsset: Token, _quoteToken: Token) => {};
-
-  updateTokens() {
-    this.tokens = this.rootStore.accountStore.tokens;
-    this.setSellToken(this.tokens.find((el) => el.assetId === this.sellToken.assetId) ?? this.tokens[0]);
-    this.setBuyToken(this.tokens.find((el) => el.assetId === this.buyToken.assetId) ?? this.tokens[1]);
-  }
-
-  swapTokens = async ({ slippage: _slippage }: { slippage: number }): Promise<boolean> => {
-    return true;
+      this.setInvoice({
+        timeExpireDate,
+        complete,
+        satoshis,
+        payment_secret,
+        payment_hash,
+        encoded: lightningNetworkInvoice,
+      });
+      console.log(timeExpireDate, complete, satoshis, payment_secret, payment_hash);
+    } catch (err) {
+      console.error("er", err);
+      toast.error("Error creating swap");
+      this.setModalOpen(false);
+    } finally {
+      this.setIsLoading(false);
+    }
   };
 
   //todo: temporary disabled for a demo
@@ -77,6 +109,12 @@ class SwapStore {
     // const newReceiveAmount = Number(this.receiveAmount) * (buyTokenPrice / sellTokenPrice);
     // this.setReceiveAmount(newReceiveAmount.toFixed(4));
   };
+
+  setModalOpen = (value: boolean) => (this.modalOpen = value);
+  setIsLoading = (value: boolean) => (this.isLoading = value);
+  setInvoice(invoice: InvoiceDetails) {
+    this.invoice = invoice;
+  }
 
   setSellToken(token: Token) {
     this.sellToken = token;
