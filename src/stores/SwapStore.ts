@@ -14,9 +14,8 @@ class SwapStore {
   // maybe use BN
   payAmount: string;
   receiveAmount: string;
-  buyTokenPrice: string;
-  sellTokenPrice: string;
-
+  modalOpen: boolean = false;
+  isLoading: boolean = false;
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
 
@@ -26,18 +25,24 @@ class SwapStore {
     this.payAmount = "0.00";
     this.receiveAmount = "0.00";
 
-    this.buyTokenPrice = this.getPrice(this.buyToken);
-    this.sellTokenPrice = this.getPrice(this.sellToken);
-
     // autorun(async () => {
     //   await this.initialize();
     // });
+  }
+
+  get sellTokenPrice() {
+    return this.rootStore.oracleStore.getPriceBySymbol(this.sellToken.symbol);
+  }
+  get buyTokenPrice() {
+    return this.rootStore.oracleStore.getPriceBySymbol(this.buyToken.symbol);
   }
 
   async initialize() {
     this.updateTokens();
   }
 
+  setModalOpen = (value: boolean) => (this.modalOpen = value);
+  setIsLoading = (value: boolean) => (this.isLoading = value);
   isBuy = () => {};
 
   getTokenPair = (_assetId: string) => {};
@@ -55,8 +60,6 @@ class SwapStore {
     this.tokens = this.rootStore.accountStore.tokens;
     this.setSellToken(this.tokens.find((el) => el.assetId === this.sellToken.assetId) ?? this.tokens[0]);
     this.setBuyToken(this.tokens.find((el) => el.assetId === this.buyToken.assetId) ?? this.tokens[1]);
-    this.buyTokenPrice = this.getPrice(this.buyToken);
-    this.sellTokenPrice = this.getPrice(this.sellToken);
   }
 
   swapTokens = async ({ slippage: _slippage }: { slippage: number }): Promise<boolean> => {
@@ -77,12 +80,10 @@ class SwapStore {
 
   setSellToken(token: Token) {
     this.sellToken = token;
-    this.sellTokenPrice = this.getPrice(token);
   }
 
   setBuyToken(token: Token) {
     this.buyToken = token;
-    this.buyTokenPrice = this.getPrice(token);
   }
 
   setPayAmount(value: string) {

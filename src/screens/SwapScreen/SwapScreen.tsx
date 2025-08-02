@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 import { useBalance } from "wagmi";
 
 import { ConnectWalletButton } from "@components/ConnectWalletButton";
+import { ProcessingForm } from "@components/Modal";
 import { AssetBlockData } from "@components/SelectAssets/SelectAssetsInput";
 import { SmartFlex } from "@components/SmartFlex";
 import Text, { TEXT_TYPES_MAP } from "@components/Text";
@@ -34,7 +35,6 @@ export const SwapScreen: React.FC = observer(() => {
   const media = useMedia();
   const { data } = useBalance({ address: accountStore.address });
   const ethBalance = new BN(data?.formatted ?? "0");
-  const [isLoading, setIsloading] = useState(false);
   const tokens = swapStore.tokens;
 
   const buyTokenPrice = oracleStore.getPriceBySymbol(swapStore.buyToken.symbol);
@@ -50,6 +50,7 @@ export const SwapScreen: React.FC = observer(() => {
   };
 
   const onPayAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (swapStore.isLoading) return;
     const newPayAmount = replaceComma(e.target.value);
 
     if (!isValidAmountInput(newPayAmount)) {
@@ -60,6 +61,7 @@ export const SwapScreen: React.FC = observer(() => {
   };
 
   const onReceivedTokensChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (swapStore.isLoading) return;
     const newReceiveAmount = replaceComma(e.target.value);
 
     if (!isValidAmountInput(newReceiveAmount)) {
@@ -82,15 +84,13 @@ export const SwapScreen: React.FC = observer(() => {
   };
 
   const swapTokens = async () => {
-    if (isLoading) return;
-    setIsloading(true);
+    swapStore.setIsLoading(true);
     try {
       //todo: swap tokens
-      setIsloading(false);
-      swapStore.setPayAmount("0");
-      swapStore.setReceiveAmount("0");
+      swapStore.setModalOpen(true);
+      // setIsloading(false);
     } catch (err) {
-      setIsloading(false);
+      swapStore.setIsLoading(false);
       console.error("er", err);
     }
   };
@@ -100,9 +100,9 @@ export const SwapScreen: React.FC = observer(() => {
   return (
     <Root>
       <Text>
-        <Title>1inch Cross-chain Swap</Title>
+        <Title>1inch Cross-Chain Swap</Title>
         <Text style={{ textAlign: "center" }} type="BUTTON">
-          Fusion+ Extension to Bitcoin
+          Lightning ⇄ Fusion: Fast and Secure Cross-Chain Txs
         </Text>
       </Text>
       <SwapSkeletonWrapper isReady={true}>
@@ -175,8 +175,10 @@ export const SwapScreen: React.FC = observer(() => {
               onClick={swapTokens}
             >
               <Text type="BUTTON_BIG">
-                {isLoading ? (
-                  <Spinner height={14} />
+                {swapStore.isLoading ? (
+                  <>
+                    <Spinner height={14} /> Processing
+                  </>
                 ) : (
                   `Swap ${swapStore.sellToken.symbol} to ${swapStore.buyToken.symbol}`
                 )}
@@ -185,6 +187,7 @@ export const SwapScreen: React.FC = observer(() => {
           </ConnectWalletButtonStyled>
         </SmartFlexStyled>
       </SwapButtonSkeletonWrapper>
+      <ProcessingForm />
     </Root>
   );
 });
