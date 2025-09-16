@@ -5,11 +5,11 @@
   "homepage": "https://chlenc.github.io/ranges",
   "scripts": {
     "start": "vite --open",
+    "dev": "vite --open",
     "build": "vite build",
     "lint": "eslint --ext .tsx,.ts . --fix",
-    "predeploy": "npm run build",
+    "predeploy": "pnpm run build",
     "deploy": "gh-pages -d build",
-    "deploy:gh": "npm run build && gh-pages -d build",
     "prepare": "husky"
   },
   "engines": {

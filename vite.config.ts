@@ -24,6 +24,7 @@ export default defineConfig({
   base: "/ranges/",
   build: {
     outDir: OUT_DIR,
+    sourcemap: false,
   },
   define: {
     "process.env.__COMMIT_HASH__": JSON.stringify(COMMIT_HASH),

@@ -8,7 +8,6 @@ import { ConnectWalletButton } from "@components/ConnectWalletButton";
 import { media } from "@themes/breakpoints";
 
 import Logo from "@assets/icons/logo.svg?react";
-import Menu from "@assets/icons/menu.svg?react";
 
 import useFlag from "@hooks/useFlag";
 import { useMedia } from "@hooks/useMedia";
@@ -17,23 +16,13 @@ import { SmartFlex } from "../SmartFlex";
 
 const Header: React.FC = observer(() => {
   const media = useMedia();
-  const [isMobileMenuOpen, openMobileMenu, closeMobileMenu] = useFlag();
+  const [isMobileMenuOpen, , closeMobileMenu] = useFlag();
 
   useEffect(() => {
     if (media.desktop) {
       closeMobileMenu();
     }
   }, [media]);
-
-  const toggleMenu = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    if (isMobileMenuOpen) {
-      closeMobileMenu();
-    } else {
-      openMobileMenu();
-    }
-  };
 
   const renderWallet = () => {
     const dataOnboardingConnectKey = `connect-${media.mobile ? "mobile" : "desktop"}`;
@@ -59,9 +48,6 @@ const Header: React.FC = observer(() => {
         </SmartFlex>
         <SmartFlex center="y" gap="8px">
           {renderWallet()}
-          <MenuContainer data-onboarding="menu-mobile" onClick={toggleMenu}>
-            <Menu />
-          </MenuContainer>
         </SmartFlex>
       </>
     );
@@ -108,14 +94,6 @@ const Divider = styled.div`
   width: 1px;
   height: 32px;
   background: ${({ theme }) => theme.colors.bgSecondary};
-`;
-
-const MenuContainer = styled(SmartFlex)`
-  align-items: center;
-  justify-content: center;
-  border: 1px solid ${({ theme }) => theme.colors.borderPrimary};
-  border-radius: 100%;
-  padding: 4px;
 `;
 
 const WalletContainer = styled(SmartFlex)<{ isVisible?: boolean }>`

@@ -1,8 +1,10 @@
 import lidaLogo from "@src/assets/tokens/lida.jpg";
-import vladLogo from "@src/assets/tokens/vlad.jpg";
+import vladLogo from "@src/assets/tokens/vlad.png";
+import vovaLogo from "@src/assets/tokens/vova.jpg";
 
 export enum TOKENS {
   VOV = "VOV",
+  VLD = "VLD",
   LIDA = "LID",
 }
 
@@ -37,7 +39,15 @@ export const SepoliaTokenConfig: Record<TOKENS, TTokenConfig> = {
     symbol: TOKENS.VOV,
     name: "Vova Token",
     decimals: 18,
-    address: "0x86D7Dc8807C1C24b49684104D63a7d009Ccd4Cca",
+    address: "0xdFa4A4E342E43bd85c7E7Fe4d4114fEC11DebF0D",
+    type: TOKEN_TYPE.ERC20,
+    logo: vovaLogo,
+  },
+  [TOKENS.VLD]: {
+    symbol: TOKENS.VLD,
+    name: "Vlad Token",
+    decimals: 18,
+    address: "0xAA6ef6F47522c2fb4e8CF8F83Ca98E56A8715bed",
     type: TOKEN_TYPE.ERC20,
     logo: vladLogo,
   },
