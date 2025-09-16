@@ -1,10 +1,10 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { mainnet, polygon, sepolia } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 
 export const wagmiConfig = getDefaultConfig({
-  appName: "hits4fun",
-  projectId: "79696fd6ff2f660aaa3a3ed92e36472f",
+  appName: "Ranges",
+  projectId: "546a21374c699f782f21670a1405a02a", //https://dashboard.reown.com/86d88bdd-a491-4c22-b100-ec81bd008af2/83ff31f5-be6f-47f1-b400-f559a6a68de0
 
-  chains: [polygon, sepolia, mainnet],
+  chains: [sepolia],
   ssr: true,
 });

@@ -10,6 +10,7 @@ import { useClearUrlParam } from "@hooks/useClearUrlParam";
 import { SwapScreen } from "@screens/SwapScreen";
 
 import "@rainbow-me/rainbowkit/styles.css";
+
 const App: React.FC = observer(() => {
   // This hooks is used to clear unnecessary URL parameters,
   // specifically "tx_id", after returning from the faucet

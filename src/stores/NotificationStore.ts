@@ -1,7 +1,8 @@
 import { toast, ToastOptions, TypeOptions } from "react-toastify";
 import { makeAutoObservable } from "mobx";
 
-import { createToast, NotificationProps } from "@components/Toast";
+import { NotificationProps } from "@components/Toast";
+import { createToast } from "@components/Toast/utils";
 
 import RootStore from "@stores/RootStore";
 

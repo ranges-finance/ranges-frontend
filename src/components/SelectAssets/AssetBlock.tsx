@@ -27,7 +27,10 @@ export interface AssetBlockProps {
 const AssetBlock: React.FC<AssetBlockProps> = observer(
   ({ styleToken, options: { showNullBalance = true, isShowBalance = true }, token, type = "square" }) => {
     const { oracleStore } = useStores();
-    const price = BN.formatUnits(oracleStore.getTokenIndexPrice(token.asset.priceFeed), DEFAULT_DECIMALS);
+    const price = token.asset.priceFeed
+      ? BN.formatUnits(oracleStore.getTokenIndexPrice(token.asset.priceFeed), DEFAULT_DECIMALS)
+      : null;
+
     const theme = useTheme();
     if (!showNullBalance && new BN(token.balance).isLessThanOrEqualTo(BN.ZERO)) return null;
 
@@ -45,10 +48,10 @@ const AssetBlock: React.FC<AssetBlockProps> = observer(
         {isShowBalance && (
           <div>
             <Text style={{ textAlign: "right" }} type="TEXT" primary>
-              {new BN(token.balance).toSignificant(token.asset.decimals)}
+              {new BN(token.balance).toSignificant(4)}
             </Text>
             <Text color={theme.colors.greenLight} style={{ textAlign: "right" }} type="BODY">
-              ${price.multipliedBy(token.balance).toSignificant(2)}
+              ${price ? price.multipliedBy(token.balance).toSignificant(2) : "-"}
             </Text>
           </div>
         )}

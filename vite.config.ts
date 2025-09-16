@@ -21,7 +21,7 @@ const COMMIT_HASH = getCommitHash();
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/unite-defi-1inch-ethglobal/",
+  base: "/ranges/",
   build: {
     outDir: OUT_DIR,
   },

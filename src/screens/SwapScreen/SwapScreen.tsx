@@ -5,7 +5,6 @@ import { observer } from "mobx-react";
 import { useBalance } from "wagmi";
 
 import { ConnectWalletButton } from "@components/ConnectWalletButton";
-import { ProcessingForm } from "@components/Modal";
 import { AssetBlockData } from "@components/SelectAssets/SelectAssetsInput";
 import { SmartFlex } from "@components/SmartFlex";
 import Text, { TEXT_TYPES_MAP } from "@components/Text";
@@ -30,18 +29,20 @@ import { BalanceSection } from "./BalanceSection";
 import { TokenSelect } from "./TokenSelect";
 
 export const SwapScreen: React.FC = observer(() => {
-  const { swapStore, accountStore, oracleStore } = useStores();
+  const { swapStore, accountStore, oracleStore, balanceStore } = useStores();
   const { isConnected } = useWallet();
   const media = useMedia();
   const { data } = useBalance({ address: accountStore.address });
   const ethBalance = new BN(data?.formatted ?? "0");
   const tokens = swapStore.tokens;
 
+  const sellTokenBalance = new BN(balanceStore.balances[swapStore.sellToken.assetId]?.balance ?? 0);
+  const buyTokenBalance = new BN(balanceStore.balances[swapStore.buyToken.assetId]?.balance ?? 0);
+
   const buyTokenPrice = oracleStore.getPriceBySymbol(swapStore.buyToken.symbol);
   const receiveAmountUSD = buyTokenPrice
-    .times(parseNumberWithCommas(swapStore.receiveAmount))
-    .toSignificant(2)
-    .toString();
+    ? buyTokenPrice.times(parseNumberWithCommas(swapStore.receiveAmount)).toSignificant(2).toString()
+    : "-";
 
   const dataOnboardingSwapKey = `swap-${media.mobile ? "mobile" : "desktop"}`;
 
@@ -58,19 +59,18 @@ export const SwapScreen: React.FC = observer(() => {
     swapStore.setPayAmount(newPayAmount);
   };
 
-  const onReceivedTokensChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (swapStore.isLoading) return;
-    const newReceiveAmount = replaceComma(e.target.value);
+  // const onReceivedTokensChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (swapStore.isLoading) return;
+  //   const newReceiveAmount = replaceComma(e.target.value);
 
-    if (!isValidAmountInput(newReceiveAmount)) return;
+  //   if (!isValidAmountInput(newReceiveAmount)) return;
 
-    swapStore.setReceiveAmount(newReceiveAmount);
-  };
+  //   swapStore.setReceiveAmount(newReceiveAmount);
+  // };
 
-  const fillPayAmount = () => {
-    const balance = "0"; //todo: get balance
-    const newPayAmount = parseNumberWithCommas(balance.toString()).toFixed(swapStore.sellToken.decimals);
-
+  const fillSellAmount = () => {
+    const balance = sellTokenBalance.toString();
+    const newPayAmount = parseNumberWithCommas(balance).toFixed(swapStore.sellToken.decimals);
     swapStore.setPayAmount(newPayAmount);
   };
 
@@ -79,9 +79,9 @@ export const SwapScreen: React.FC = observer(() => {
   return (
     <Root>
       <Text>
-        <Title>1inch Cross-Chain Swap</Title>
+        <Title>Trade Within Ranges</Title>
         <Text style={{ textAlign: "center" }} type="BUTTON">
-          Lightning ⇄ Fusion: Fast and Secure Cross-Chain Txs
+          Swap one token for another directly inside the defined liquidity ranges.
         </Text>
       </Text>
       <SwapSkeletonWrapper isReady={true}>
@@ -106,6 +106,14 @@ export const SwapScreen: React.FC = observer(() => {
               value={swapStore.payAmount}
               onChange={onPayAmountChange}
             />
+            {isLoaded && ethBalance.gt(0) && (
+              <BalanceSection
+                balance={sellTokenBalance.toSignificant(4).toString()}
+                balanceUSD={receiveAmountUSD}
+                handleMaxAmount={fillSellAmount}
+                isLoaded={isLoaded}
+              />
+            )}
           </SwapBox>
 
           <SwitchTokens disabled={false} isLoaded={isLoaded} onClick={swapStore.onSwitchTokens}>
@@ -128,13 +136,14 @@ export const SwapScreen: React.FC = observer(() => {
               id="receive-amount"
               type="text"
               value={swapStore.receiveAmount}
-              onChange={onReceivedTokensChange}
+              readOnly
+              // onChange={onReceivedTokensChange}
             />
             {isLoaded && ethBalance.gt(0) && (
               <BalanceSection
-                balance={ethBalance.toSignificant(4).toString()}
+                balance={buyTokenBalance.toSignificant(4).toString()}
                 balanceUSD={receiveAmountUSD}
-                handleMaxAmount={fillPayAmount}
+                handleMaxAmount={() => {}}
                 isLoaded={isLoaded}
               />
             )}
@@ -154,17 +163,14 @@ export const SwapScreen: React.FC = observer(() => {
                   <>
                     <Spinner height={14} /> Processing
                   </>
-                ) : !swapStore.isSellEth ? (
-                  `Swap ${swapStore.sellToken.symbol} to ${swapStore.buyToken.symbol}`
                 ) : (
-                  `Attach invoice`
+                  `Swap ${swapStore.sellToken.symbol} to ${swapStore.buyToken.symbol}`
                 )}
               </Text>
             </SwapButton>
           </ConnectWalletButtonStyled>
         </SmartFlexStyled>
       </SwapButtonSkeletonWrapper>
-      <ProcessingForm />
     </Root>
   );
 });

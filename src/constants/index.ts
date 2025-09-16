@@ -1,5 +1,5 @@
 export const ROUTES = {
-  SWAP: "/",
+  ROOT: "/",
 };
 
 export const DEFAULT_DECIMALS = 18;

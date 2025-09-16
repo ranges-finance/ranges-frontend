@@ -11,8 +11,9 @@ import WarningIcon from "@assets/icons/warning.svg?react";
 
 import { useStores } from "@stores";
 
+import { TEXT_TYPES_MAP } from "./Text/types";
 import { SmartFlex } from "./SmartFlex";
-import Text, { TEXT_TYPES_MAP } from "./Text";
+import Text from "./Text";
 
 export interface NotificationProps {
   text: React.ReactNode;
@@ -23,7 +24,7 @@ export interface NotificationProps {
 
 interface Props extends ToastContentProps<unknown>, NotificationProps {}
 
-const Toast: React.FC<Props> = ({ text, error, hash, address, toastProps }) => {
+export const Toast: React.FC<Props> = ({ text, error, hash, address, toastProps }) => {
   const { type, closeToast } = toastProps;
   const { accountStore } = useStores();
   let link = null;
@@ -55,10 +56,6 @@ const Toast: React.FC<Props> = ({ text, error, hash, address, toastProps }) => {
       <CloseIconStyled onClick={closeToast} />
     </ToastContainer>
   );
-};
-
-export const createToast = (props: Props) => {
-  return <Toast {...props} />;
 };
 
 const ToastContainer = styled(SmartFlex)`

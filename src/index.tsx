@@ -29,7 +29,14 @@ const STORE = RootStore.create(initState);
 
 console.warn(`Version: ${process.env.__COMMIT_HASH__}`);
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 

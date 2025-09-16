@@ -39,7 +39,7 @@ type MenuItem = {
 const MENU_ITEMS: Array<MenuItem> = [
   {
     title: "TRADE",
-    link: ROUTES.SWAP,
+    link: ROUTES.ROOT,
   },
 ];
 

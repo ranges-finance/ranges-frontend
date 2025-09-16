@@ -1,8 +1,8 @@
 {
-  "name": "Cerera-frontend",
+  "name": "ranges-frontend",
   "version": "0.0.1",
   "private": true,
-  "homepage": "https://chlenc.github.io/unite-defi-1inch-ethglobal",
+  "homepage": "https://chlenc.github.io/ranges",
   "scripts": {
     "start": "vite --open",
     "build": "vite build",
@@ -61,6 +61,7 @@
     "react-toastify": "^9.1.3",
     "tsdef": "^0.0.14",
     "unleash-proxy-client": "^3.6.1",
+    "viem": "^2.37.5",
     "wagmi": "^2.16.1"
   },
   "devDependencies": {

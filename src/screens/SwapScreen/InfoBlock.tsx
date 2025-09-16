@@ -3,7 +3,8 @@ import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 
 import { SmartFlex } from "@components/SmartFlex";
-import Text, { TEXT_TYPES_MAP } from "@components/Text";
+import Text from "@components/Text";
+import { TEXT_TYPES_MAP } from "@components/Text/types";
 import { media } from "@themes/breakpoints";
 
 import ArrowUpIcon from "@assets/icons/arrowUp.svg?react";
@@ -24,11 +25,12 @@ export const InfoBlock: React.FC<InfoBlockProps> = ({ slippage, updateSlippage }
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
   const [isSlippageSettingOpen, setSlippageSettingOpen] = useState(false);
-  const { swapStore, oracleStore } = useStores();
-  const exchangeRate = oracleStore
-    .getTokenIndexPrice(swapStore.sellToken.priceFeed)
-    .dividedBy(oracleStore.getTokenIndexPrice(swapStore.buyToken.priceFeed))
-    .toNumber();
+  const { swapStore } = useStores();
+  const exchangeRate = 1;
+  // oracleStore
+  //   .getTokenIndexPrice(swapStore.sellToken.priceFeed)
+  //   .dividedBy(oracleStore.getTokenIndexPrice(swapStore.buyToken.priceFeed))
+  //   .toNumber();
 
   // TODO: Fix it
   // const exchangeFee = tradeStore.exchangeFeeFormat;

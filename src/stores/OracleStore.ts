@@ -33,24 +33,32 @@ class OracleStore {
   }
 
   private initAndGetPythPrices = async () => {
-    // You can find the ids of prices at https://pyth.network/developers/price-feed-ids
+    try {
+      // You can find the ids of prices at https://pyth.network/developers/price-feed-ids
 
-    const priceIds = this.rootStore.accountStore.tokens
-      .filter((t) => t.priceFeed?.toLowerCase() !== zeroFeedId.toLowerCase())
-      .map((t) => t.priceFeed ?? "");
+      const priceIds = this.rootStore.accountStore.tokens
+        .filter((t) => t.priceFeed?.toLowerCase() !== zeroFeedId.toLowerCase())
+        .map((t) => t.priceFeed)
+        .filter((t) => t !== undefined);
 
-    const response = await this.priceServiceConnection.getLatestPriceUpdates(priceIds, { parsed: true });
+      if (priceIds.length === 0) return;
 
-    const lastPriceUpdates = response.parsed ?? [];
+      const response = await this.priceServiceConnection.getLatestPriceUpdates(priceIds, { parsed: true });
 
-    const initPrices = lastPriceUpdates.reduce(
-      (acc, priceFeed) => {
-        return { ...acc, [`0x${priceFeed.id}`]: priceFeed.price.price };
-      },
-      {} as Record<string, string>,
-    );
+      const lastPriceUpdates = response.parsed ?? [];
 
-    this.setPrices(initPrices);
+      const initPrices = lastPriceUpdates.reduce(
+        (acc, priceFeed) => {
+          return { ...acc, [`0x${priceFeed.id}`]: priceFeed.price.price };
+        },
+        {} as Record<string, string>,
+      );
+
+      this.setPrices(initPrices);
+    } catch (error) {
+      console.warn("Failed to fetch Pyth prices:", error);
+      // Не выбрасываем ошибку, чтобы не ломать приложение
+    }
   };
 
   getTokenIndexPrice = (priceFeed: string): BN => {
@@ -68,7 +76,9 @@ class OracleStore {
 
   getPriceBySymbol = (symbol: string): BN => {
     const token = this.rootStore.accountStore.tokensBySymbol[symbol];
-    return BN.formatUnits(this.getTokenIndexPrice(token.priceFeed ?? ""), 9);
+    const price = this.getTokenIndexPrice(token.priceFeed ?? "");
+    if (!price) return BN.ZERO;
+    return BN.formatUnits(price, 9);
   };
 
   private setPrices = (v: Record<string, string>) => (this.prices = v);

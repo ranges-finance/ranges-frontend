@@ -4,7 +4,6 @@ import type { Config } from "wagmi";
 import { AssetBlockData } from "@components/SelectAssets/SelectAssetsInput";
 
 import { NetworkConfig } from "@constants/networkConfig";
-import TOKEN_LOGOS from "@constants/tokenLogos";
 
 import { Token } from "@entity";
 
@@ -15,7 +14,7 @@ class AccountStore {
   address?: `0x${string}`;
   isConnected: boolean = false;
   isProcessing: boolean = false;
-  chainId: number | null = NetworkConfig.ethereum.chainId;
+  chainId: number | null = NetworkConfig.sepolia.chainId;
   wagmiConfig: Config | null = null;
 
   isAuthenticating: boolean = false;
@@ -41,30 +40,18 @@ class AccountStore {
     const tokens = this.tokens;
 
     return tokens.map((token) => {
-      const balance = this.rootStore.balanceStore.getFormattedBalance(token.symbol);
+      const balance = this.rootStore.balanceStore.balances[token.symbol]?.balance;
       return {
         assetId: token.assetId,
         asset: token,
-        balance: balance,
-        price: this.rootStore.oracleStore.getTokenIndexPrice(token.priceFeed).toString(),
+        balance: balance?.toString() || "0",
+        price: this.rootStore.oracleStore.getTokenIndexPrice(token.priceFeed!)?.toString() || "0",
       };
     });
   }
 
   get tokens() {
-    return (
-      this.networkConfig?.tokens.map(
-        (token) =>
-          new Token({
-            name: token.symbol,
-            symbol: token.symbol,
-            decimals: token.decimals,
-            assetId: token.symbol,
-            logo: TOKEN_LOGOS[token.symbol],
-            priceFeed: token.priceFeed ?? "",
-          }),
-      ) ?? []
-    );
+    return Object.values(this.networkConfig?.tokens || {}).map((token) => new Token(token)) ?? [];
   }
 
   get tokensBySymbol() {
