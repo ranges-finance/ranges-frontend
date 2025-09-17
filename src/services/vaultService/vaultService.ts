@@ -1,6 +1,7 @@
 import { getContract } from "viem";
 import type { Config } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
+import { writeContract } from "wagmi/actions";
 
 import { VAULT_ABI } from "./vaultABI";
 
@@ -40,23 +41,28 @@ export class VaultService {
     });
   }
 
-  async swap(params: SwapParams) {
+  async swap(params: SwapParams): Promise<`0x${string}`> {
     const singleSwap = {
-      poolId: params.poolId,
-      kind: params.kind,
-      assetIn: params.assetIn,
-      assetOut: params.assetOut,
-      amount: params.amount,
-      userData: params.userData,
+      poolId: params.poolId as `0x${string}`,
+      kind: params.kind as 0 | 1,
+      assetIn: params.assetIn as `0x${string}`,
+      assetOut: params.assetOut as `0x${string}`,
+      amount: BigInt(params.amount),
+      userData: params.userData as `0x${string}`,
     };
 
     const funds = {
-      sender: params.sender,
+      sender: params.sender as `0x${string}`,
       fromInternalBalance: params.fromInternalBalance,
-      recipient: params.recipient,
+      recipient: params.recipient as `0x${string}`,
       toInternalBalance: params.toInternalBalance,
     };
 
-    return await this.contract.swap(singleSwap, funds, params.limit, params.deadline);
+    return await writeContract(this.wagmiConfig, {
+      address: this.vaultAddress as `0x${string}`,
+      abi: VAULT_ABI,
+      functionName: "swap",
+      args: [singleSwap, funds, BigInt(params.limit), BigInt(params.deadline)],
+    });
   }
 }

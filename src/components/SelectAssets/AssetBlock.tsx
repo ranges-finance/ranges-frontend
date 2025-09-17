@@ -8,7 +8,6 @@ import Text from "@components/Text";
 
 import { useStores } from "@stores";
 
-import { DEFAULT_DECIMALS } from "@constants";
 import BN from "@utils/BN";
 
 import { AssetBlockData } from "./SelectAssetsInput";
@@ -27,9 +26,7 @@ export interface AssetBlockProps {
 const AssetBlock: React.FC<AssetBlockProps> = observer(
   ({ styleToken, options: { showNullBalance = true, isShowBalance = true }, token, type = "square" }) => {
     const { oracleStore } = useStores();
-    const price = token.asset.priceFeed
-      ? BN.formatUnits(oracleStore.getTokenIndexPrice(token.asset.priceFeed), DEFAULT_DECIMALS)
-      : null;
+    const price = token.asset.priceFeed ? oracleStore.getTokenIndexPrice(token.asset.priceFeed) : null;
 
     const theme = useTheme();
     if (!showNullBalance && new BN(token.balance).isLessThanOrEqualTo(BN.ZERO)) return null;

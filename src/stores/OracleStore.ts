@@ -61,24 +61,17 @@ class OracleStore {
     }
   };
 
-  getTokenIndexPrice = (priceFeed: string): BN => {
-    if (!this.prices) return BN.ZERO;
+  getTokenIndexPrice = (priceFeed?: string): BN | null => {
+    if (!this.prices || !priceFeed) return null;
 
     const price = this.prices[priceFeed];
 
-    if (!price) return BN.ZERO;
+    if (!price) return null;
 
     const priceBN = new BN(price);
 
     // Нам нужно докидывать 1 decimal, потому что decimals разный в api и у нас
-    return BN.parseUnits(priceBN, 1);
-  };
-
-  getPriceBySymbol = (symbol: string): BN => {
-    const token = this.rootStore.accountStore.tokensBySymbol[symbol];
-    const price = this.getTokenIndexPrice(token.priceFeed ?? "");
-    if (!price) return BN.ZERO;
-    return BN.formatUnits(price, 9);
+    return BN.formatUnits(BN.parseUnits(priceBN, 1), 9);
   };
 
   private setPrices = (v: Record<string, string>) => (this.prices = v);

@@ -45,7 +45,7 @@ class AccountStore {
         assetId: token.assetId,
         asset: token,
         balance: balance?.toString() || "0",
-        price: this.rootStore.oracleStore.getTokenIndexPrice(token.priceFeed!)?.toString() || "0",
+        price: this.rootStore.oracleStore.getTokenIndexPrice(token.priceFeed)?.toString() || "-",
       };
     });
   }

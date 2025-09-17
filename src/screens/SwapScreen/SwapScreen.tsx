@@ -39,10 +39,57 @@ export const SwapScreen: React.FC = observer(() => {
   const sellTokenBalance = new BN(balanceStore.balances[swapStore.sellToken.assetId]?.balance ?? 0);
   const buyTokenBalance = new BN(balanceStore.balances[swapStore.buyToken.assetId]?.balance ?? 0);
 
-  const buyTokenPrice = oracleStore.getPriceBySymbol(swapStore.buyToken.symbol);
+  const buyTokenPrice = oracleStore.getTokenIndexPrice(swapStore.buyToken.priceFeed);
+  const sellTokenPrice = oracleStore.getTokenIndexPrice(swapStore.sellToken.priceFeed);
+
+  // Проверяем, достаточно ли баланса для совершения сделки
+  const payAmountBN = new BN(swapStore.payAmount || "0");
+  const hasInsufficientBalance = payAmountBN.gt(0) && sellTokenBalance.lt(payAmountBN);
+
+  // Проверяем, равна ли сумма продажи нулю
+  const isSellAmountZero = payAmountBN.eq(0);
+
+  // Функция для определения текста кнопки
+  const getButtonText = () => {
+    if (swapStore.isApproving) {
+      return "Approving...";
+    }
+
+    if (swapStore.isSwapping) {
+      return "Swapping...";
+    }
+
+    if (swapStore.isLoading) {
+      return "Processing";
+    }
+
+    if (hasInsufficientBalance) {
+      return "Insufficient fee balance";
+    }
+
+    if (isSellAmountZero) {
+      return "Swap";
+    }
+
+    return `Swap ${swapStore.sellToken.symbol} to ${swapStore.buyToken.symbol}`;
+  };
+
+  // Функция для определения состояния disabled кнопки
+  const isButtonDisabled = () => {
+    if (!isConnected) return true;
+    if (swapStore.isLoading) return true;
+    if (isSellAmountZero) return true;
+    return false;
+  };
+
   const receiveAmountUSD = buyTokenPrice
     ? buyTokenPrice.times(parseNumberWithCommas(swapStore.receiveAmount)).toSignificant(2).toString()
     : "-";
+
+  const sellAmountUSD =
+    sellTokenPrice && sellTokenPrice.gt(0)
+      ? sellTokenPrice.times(parseNumberWithCommas(swapStore.payAmount)).toSignificant(2).toString()
+      : "-";
 
   const dataOnboardingSwapKey = `swap-${media.mobile ? "mobile" : "desktop"}`;
 
@@ -109,7 +156,7 @@ export const SwapScreen: React.FC = observer(() => {
             {isLoaded && ethBalance.gt(0) && (
               <BalanceSection
                 balance={sellTokenBalance.toSignificant(4).toString()}
-                balanceUSD={receiveAmountUSD}
+                balanceUSD={sellAmountUSD}
                 handleMaxAmount={fillSellAmount}
                 isLoaded={isLoaded}
               />
@@ -155,16 +202,16 @@ export const SwapScreen: React.FC = observer(() => {
           <ConnectWalletButtonStyled connectText="Connect wallet to start trading" targetKey="swap_connect_btn">
             <SwapButton
               data-onboarding={dataOnboardingSwapKey}
-              disabled={!isConnected} //todo || !balanceStore.initialized
+              disabled={isButtonDisabled()}
               onClick={swapStore.swapTokens}
             >
               <Text type="BUTTON_BIG">
-                {swapStore.isLoading ? (
+                {swapStore.isLoading || swapStore.isApproving || swapStore.isSwapping ? (
                   <>
-                    <Spinner height={14} /> Processing
+                    <Spinner height={14} /> {getButtonText()}
                   </>
                 ) : (
-                  `Swap ${swapStore.sellToken.symbol} to ${swapStore.buyToken.symbol}`
+                  getButtonText()
                 )}
               </Text>
             </SwapButton>

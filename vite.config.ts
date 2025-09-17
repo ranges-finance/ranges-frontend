@@ -44,7 +44,4 @@ export default defineConfig({
     checker({ typescript: true }),
     svgr(),
   ],
-  optimizeDeps: {
-    include: ["@solana/web3.js"],
-  },
 });

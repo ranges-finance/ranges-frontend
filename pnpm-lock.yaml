@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@emotion/react':
-        specifier: ^11.11.3
+        specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.18)(react@18.3.1)
       '@emotion/styled':
-        specifier: ^11.11.0
+        specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@18.3.1))(@types/react@18.3.18)(react@18.3.1)
       '@fontsource/chakra-petch':
         specifier: ^5.1.1
@@ -30,22 +30,22 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
-        specifier: ^5.40.1
+        specifier: ^5.66.3
         version: 5.66.3(react@18.3.1)
       '@tanstack/react-table':
-        specifier: ^8.13.2
+        specifier: ^8.21.2
         version: 8.21.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/jest-dom':
         specifier: ^5.17.0
         version: 5.17.0
       '@types/react':
-        specifier: ^18.2.47
+        specifier: ^18.3.18
         version: 18.3.18
       '@types/react-dom':
-        specifier: ^18.2.18
+        specifier: ^18.3.5
         version: 18.3.5(@types/react@18.3.18)
       '@unleash/proxy-client-react':
-        specifier: ^4.4.0
+        specifier: ^4.5.2
         version: 4.5.2(unleash-proxy-client@3.7.3)
       '@wagmi/core':
         specifier: ^2.18.1
@@ -63,64 +63,64 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       dayjs:
-        specifier: ^1.11.10
+        specifier: ^1.11.13
         version: 1.11.13
       ethers:
         specifier: ^6.15.0
         version: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       framer-motion:
-        specifier: ^11.0.3
+        specifier: ^11.18.2
         version: 11.18.2(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       gh-pages:
-        specifier: ^6.1.1
+        specifier: ^6.3.0
         version: 6.3.0
       lightweight-charts:
-        specifier: ^4.2.1
+        specifier: ^4.2.3
         version: 4.2.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
       mixpanel-browser:
-        specifier: ^2.53.0
+        specifier: ^2.60.0
         version: 2.60.0
       mobx:
-        specifier: ^6.12.0
+        specifier: ^6.13.6
         version: 6.13.6
       mobx-react:
-        specifier: ^9.1.0
+        specifier: ^9.2.0
         version: 9.2.0(mobx@6.13.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       mobx-react-lite:
-        specifier: ^4.0.7
+        specifier: ^4.1.0
         version: 4.1.0(mobx@6.13.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
       prettier:
-        specifier: ^3.2.1
+        specifier: ^3.5.1
         version: 3.5.1
       qrcode.react:
         specifier: ^4.2.0
         version: 4.2.0(react@18.3.1)
       rc-dialog:
-        specifier: ^9.3.4
+        specifier: ^9.6.0
         version: 9.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-slider:
-        specifier: ^10.5.0
+        specifier: ^10.6.2
         version: 10.6.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
-        specifier: ^18.2.0
+        specifier: ^18.3.1
         version: 18.3.1
       react-content-loader:
         specifier: ^7.0.2
         version: 7.0.2(react@18.3.1)
       react-dom:
-        specifier: ^18.2.0
+        specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       react-joyride:
         specifier: ^2.9.3
         version: 2.9.3(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-loading-skeleton:
-        specifier: ^3.3.1
+        specifier: ^3.5.0
         version: 3.5.0(react@18.3.1)
       react-modal-sheet:
         specifier: ^2.2.1
@@ -129,7 +129,7 @@ importers:
         specifier: ^4.4.2
         version: 4.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom:
-        specifier: ^6.21.2
+        specifier: ^6.29.0
         version: 6.29.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-toastify:
         specifier: ^9.1.3
@@ -138,7 +138,7 @@ importers:
         specifier: ^0.0.14
         version: 0.0.14
       unleash-proxy-client:
-        specifier: ^3.6.1
+        specifier: ^3.7.3
         version: 3.7.3
       viem:
         specifier: ^2.37.5
@@ -151,13 +151,13 @@ importers:
         specifier: ^7.21.11
         version: 7.21.11(@babel/core@7.26.9)
       '@emotion/babel-plugin':
-        specifier: ^11.11.0
+        specifier: ^11.13.5
         version: 11.13.5
       '@types/lodash':
-        specifier: ^4.14.202
+        specifier: ^4.17.15
         version: 4.17.15
       '@types/mixpanel-browser':
-        specifier: ^2.49.1
+        specifier: ^2.51.0
         version: 2.51.0
       '@types/node':
         specifier: ^22.13.4
@@ -166,19 +166,19 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.2.0
+        specifier: ^7.18.0
         version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3)
       '@typescript-eslint/parser':
-        specifier: ^7.2.0
+        specifier: ^7.18.0
         version: 7.18.0(eslint@8.57.1)(typescript@5.7.3)
       '@vitejs/plugin-react':
-        specifier: ^4.2.1
+        specifier: ^4.3.4
         version: 4.3.4(vite@5.4.14(@types/node@22.13.4))
       copyfiles:
         specifier: ^2.4.1
         version: 2.4.1
       eslint:
-        specifier: ^8.57.0
+        specifier: ^8.57.1
         version: 8.57.1
       eslint-config-prettier:
         specifier: ^9.1.0
@@ -187,40 +187,40 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1(@babel/plugin-syntax-flow@7.26.0(@babel/core@7.26.9))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.26.9))(eslint@8.57.1)(typescript@5.7.3)
       eslint-plugin-import:
-        specifier: ^2.29.1
+        specifier: ^2.31.0
         version: 2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)
       eslint-plugin-n:
         specifier: ^16.6.2
         version: 16.6.2(eslint@8.57.1)
       eslint-plugin-prettier:
-        specifier: ^5.1.3
+        specifier: ^5.2.3
         version: 5.2.3(eslint-config-prettier@9.1.0(eslint@8.57.1))(eslint@8.57.1)(prettier@3.5.1)
       eslint-plugin-promise:
-        specifier: ^6.1.1
+        specifier: ^6.6.0
         version: 6.6.0(eslint@8.57.1)
       eslint-plugin-react:
-        specifier: ^7.33.2
+        specifier: ^7.37.4
         version: 7.37.4(eslint@8.57.1)
       eslint-plugin-react-hooks:
-        specifier: ^4.6.0
+        specifier: ^4.6.2
         version: 4.6.2(eslint@8.57.1)
       eslint-plugin-react-refresh:
-        specifier: ^0.4.6
+        specifier: ^0.4.19
         version: 0.4.19(eslint@8.57.1)
       eslint-plugin-simple-import-sort:
         specifier: ^10.0.0
         version: 10.0.0(eslint@8.57.1)
       eslint-plugin-unused-imports:
-        specifier: ^3.0.0
+        specifier: ^3.2.0
         version: 3.2.0(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)
       husky:
-        specifier: ^9.1.5
+        specifier: ^9.1.7
         version: 9.1.7
       typescript:
-        specifier: ^5.3.3
+        specifier: ^5.7.3
         version: 5.7.3
       vite:
-        specifier: ^5.2.0
+        specifier: ^5.4.14
         version: 5.4.14(@types/node@22.13.4)
       vite-plugin-checker:
         specifier: ^0.6.4
@@ -229,7 +229,7 @@ importers:
         specifier: ^0.22.0
         version: 0.22.0(rollup@4.34.8)(vite@5.4.14(@types/node@22.13.4))
       vite-plugin-svgr:
-        specifier: ^4.2.0
+        specifier: ^4.3.0
         version: 4.3.0(rollup@4.34.8)(typescript@5.7.3)(vite@5.4.14(@types/node@22.13.4))
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -2277,6 +2277,9 @@ packages:
   bn.js@5.2.1:
     resolution: {integrity: sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==}
 
+  bn.js@5.2.2:
+    resolution: {integrity: sha512-v2YAxEmKaBLahNwE1mjp4WON6huMNeuDvagFZW+ASCuA/ku0bXR9hSMw0XpiqMoA3+rmnyck/tPRSFQkoC9Cuw==}
+
   bolt11@1.4.1:
     resolution: {integrity: sha512-jR0Y+MO+CK2at1Cg5mltLJ+6tdOwNKoTS/DJOBDdzVkQ+R9D6UgZMayTWOsuzY7OgV1gEqlyT5Tzk6t6r4XcNQ==}
 
@@ -2380,8 +2383,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  caniuse-lite@1.0.30001700:
-    resolution: {integrity: sha512-2S6XIXwaE7K7erT8dY+kLQcpa5ms63XlRkMkReXjle+kf6c5g38vyMl+Z5y8dSxOFDhcFe+nxnn261PLxBSQsQ==}
+  caniuse-lite@1.0.30001743:
+    resolution: {integrity: sha512-e6Ojr7RV14Un7dz6ASD0aZDmQPT/A+eZU+nuTNfjqmRrmkmQlnTNWH0SKmqagx9PeW87UVqapSurtAXifmtdmw==}
 
   chalk@3.0.0:
     resolution: {integrity: sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==}
@@ -2589,6 +2592,15 @@ packages:
 
   debug@4.4.0:
     resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
+  debug@4.4.3:
+    resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -4032,8 +4044,8 @@ packages:
   preact@10.24.2:
     resolution: {integrity: sha512-1cSoF0aCC8uaARATfrlz4VCBqE8LwZwRfLgkxJOQwAlQt6ayTmi0D9OF7nXid1POI5SZidFuG9CnlXbDfLqY/Q==}
 
-  preact@10.26.0:
-    resolution: {integrity: sha512-6ugi/Mb7lyV5RA6KlnijFyDLMU253i7L0RRiObIzDoqj59KT9iTeNJbA/YGw6M7jP4vxaab0DOA8DgodTOA6EQ==}
+  preact@10.27.2:
+    resolution: {integrity: sha512-5SYSgFKSyhCbk6SrXyMpqjb5+MQBgfvEKE/OC+PujcY34sOpqtr+0AZQtPYx5IA6VxynQ7rUPCtKzyovpj9Bpg==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -4433,6 +4445,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.7.2:
+    resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
 
@@ -4453,6 +4470,11 @@ packages:
 
   sha.js@2.4.11:
     resolution: {integrity: sha512-QMEp5B7cftE7APOjk5Y6xgrbWu+WkLVQwk8JNjZ8nKRciZaByEW6MubieAiToS7+dwvrjGhH8jRXz3MVd0AYqQ==}
+    hasBin: true
+
+  sha.js@2.4.12:
+    resolution: {integrity: sha512-8LzC5+bvI45BjpfXU8V5fdU2mfeKiQe1D1gIMn7XUlF3OTUrpdJpPPH4EMAnF0DsHHdSZqCdSss5qCmJKuiO3w==}
+    engines: {node: '>= 0.10'}
     hasBin: true
 
   shebang-command@2.0.0:
@@ -4629,6 +4651,10 @@ packages:
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
+
+  to-buffer@1.2.1:
+    resolution: {integrity: sha512-tB82LpAIWjhLYbqjx3X4zEeHN6M8CiuOEy2JY8SEQVdYRe3CCHOFaqrBW1doLDrfpWhplcW7BL+bO3/6S3pcDQ==}
+    engines: {node: '>= 0.4'}
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -6104,15 +6130,15 @@ snapshots:
 
   '@coinbase/wallet-sdk@3.9.3':
     dependencies:
-      bn.js: 5.2.1
+      bn.js: 5.2.2
       buffer: 6.0.3
       clsx: 1.2.1
       eth-block-tracker: 7.1.0
       eth-json-rpc-filters: 6.0.1
       eventemitter3: 5.0.1
       keccak: 3.0.4
-      preact: 10.26.0
-      sha.js: 2.4.11
+      preact: 10.27.2
+      sha.js: 2.4.12
     transitivePeerDependencies:
       - supports-color
 
@@ -6517,8 +6543,8 @@ snapshots:
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@types/debug': 4.1.12
-      debug: 4.4.0
-      semver: 7.7.1
+      debug: 4.4.3
+      semver: 7.7.2
       superstruct: 1.0.4
     transitivePeerDependencies:
       - supports-color
@@ -8351,6 +8377,8 @@ snapshots:
 
   bn.js@5.2.1: {}
 
+  bn.js@5.2.2: {}
+
   bolt11@1.4.1:
     dependencies:
       '@types/bn.js': 4.11.6
@@ -8430,7 +8458,7 @@ snapshots:
 
   browserslist@4.24.4:
     dependencies:
-      caniuse-lite: 1.0.30001700
+      caniuse-lite: 1.0.30001743
       electron-to-chromium: 1.5.101
       node-releases: 2.0.19
       update-browserslist-db: 1.1.2(browserslist@4.24.4)
@@ -8495,7 +8523,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  caniuse-lite@1.0.30001700: {}
+  caniuse-lite@1.0.30001743: {}
 
   chalk@3.0.0:
     dependencies:
@@ -8725,6 +8753,10 @@ snapshots:
       ms: 2.1.3
 
   debug@4.4.0:
+    dependencies:
+      ms: 2.1.3
+
+  debug@4.4.3:
     dependencies:
       ms: 2.1.3
 
@@ -10452,7 +10484,7 @@ snapshots:
 
   preact@10.24.2: {}
 
-  preact@10.26.0: {}
+  preact@10.27.2: {}
 
   prelude-ls@1.2.1: {}
 
@@ -10921,6 +10953,8 @@ snapshots:
 
   semver@7.7.1: {}
 
+  semver@7.7.2: {}
+
   set-blocking@2.0.0: {}
 
   set-function-length@1.2.2:
@@ -10951,6 +10985,12 @@ snapshots:
     dependencies:
       inherits: 2.0.4
       safe-buffer: 5.2.1
+
+  sha.js@2.4.12:
+    dependencies:
+      inherits: 2.0.4
+      safe-buffer: 5.2.1
+      to-buffer: 1.2.1
 
   shebang-command@2.0.0:
     dependencies:
@@ -11162,6 +11202,12 @@ snapshots:
   tiny-emitter@2.1.0: {}
 
   tiny-invariant@1.3.3: {}
+
+  to-buffer@1.2.1:
+    dependencies:
+      isarray: 2.0.5
+      safe-buffer: 5.2.1
+      typed-array-buffer: 1.0.3
 
   to-regex-range@5.0.1:
     dependencies:
