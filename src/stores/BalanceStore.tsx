@@ -88,7 +88,6 @@ class BalanceStore {
 
       runInAction(() => {
         if (currentChainBalances) {
-          console.log(currentChainBalances);
           this.portfolioBalances = {
             ...this.portfolioBalances,
             [chainId]: currentChainBalances,

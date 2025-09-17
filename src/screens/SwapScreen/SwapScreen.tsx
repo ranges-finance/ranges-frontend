@@ -96,7 +96,7 @@ export const SwapScreen: React.FC = observer(() => {
                 selectedOption={generateBalanceData([swapStore.sellToken])[0]}
                 showBalance="balance"
                 type="rounded"
-                onSelect={(item) => item.asset.symbol !== swapStore.sellToken.symbol && swapStore.onSwitchTokens()}
+                onSelect={(item) => swapStore.setSellToken(item.asset)}
               />
             </BoxHeader>
             <SwapInput
@@ -128,7 +128,7 @@ export const SwapScreen: React.FC = observer(() => {
                 selectedOption={generateBalanceData([swapStore.buyToken])[0]}
                 showBalance="balance"
                 type="rounded"
-                onSelect={(item) => item.asset.symbol !== swapStore.buyToken.symbol && swapStore.onSwitchTokens()}
+                onSelect={(item) => swapStore.setBuyToken(item.asset)}
               />
             </BoxHeader>
             <SwapInput

@@ -63,7 +63,6 @@ export async function fetchChainBalances(
   networkConfig: TNetworkConfig,
   tokens: TTokenConfig[],
 ): Promise<PortfolioBalances[number] | null> {
-  // console.log("fetchChainBalances", chainId, address, networkConfig);
   try {
     const rpcUrl = networkConfig.rpc;
     if (!rpcUrl) {
