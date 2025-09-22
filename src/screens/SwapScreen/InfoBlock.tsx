@@ -2,42 +2,32 @@ import React, { useState } from "react";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 
-import { SmartFlex } from "@components/SmartFlex";
 import Text from "@components/Text";
-import { TEXT_TYPES_MAP } from "@components/Text/types";
 import { media } from "@themes/breakpoints";
 
 import ArrowUpIcon from "@assets/icons/arrowUp.svg?react";
-import SettingsIcon from "@assets/icons/gear.svg?react";
 
 import { useStores } from "@stores";
 
 import BN from "@utils/BN";
 
-import { SlippageSettings } from "./SlippageSettings";
+// import { SlippageSettings } from "./SlippageSettings";
 
 interface InfoBlockProps {
-  slippage: number;
-  updateSlippage: (percent: number) => void;
+  // slippage: number;
+  // updateSlippage: (percent: number) => void;
 }
 
-export const InfoBlock: React.FC<InfoBlockProps> = ({ slippage, updateSlippage }) => {
+export const InfoBlock: React.FC<InfoBlockProps> = () => {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
-  const [isSlippageSettingOpen, setSlippageSettingOpen] = useState(false);
   const { swapStore } = useStores();
   const exchangeRate = 1;
-  // oracleStore
-  //   .getTokenIndexPrice(swapStore.sellToken.priceFeed)
-  //   .dividedBy(oracleStore.getTokenIndexPrice(swapStore.buyToken.priceFeed))
-  //   .toNumber();
 
-  // TODO: Fix it
-  // const exchangeFee = tradeStore.exchangeFeeFormat;
-  // const matcherFee = tradeStore.matcherFeeFormat;
-  const exchangeFee = BN.ZERO;
-  const matcherFee = BN.ZERO;
-  const totalFee = exchangeFee.plus(matcherFee);
+  const virtualBalance = BN.ZERO;
+  const factBalance = BN.ZERO;
+  const minPrice = BN.ZERO;
+  const maxPrice = BN.ZERO;
   return (
     <Root>
       <InfoLine onClick={() => setShowDetails(!showDetails)}>
@@ -46,42 +36,23 @@ export const InfoBlock: React.FC<InfoBlockProps> = ({ slippage, updateSlippage }
           {swapStore.buyToken.symbol}
         </Text>
 
-        <Text color={theme.colors.greenLight} type="SUPPORTING">
-          <SmartFlex alignItems="center">
-            Total fee
-            <SnackStyled>${totalFee.toSignificant(2)}</SnackStyled>
-            <ArrowUpIconStyled showDetails={showDetails} />
-          </SmartFlex>
-        </Text>
+        <ArrowUpIconStyled showDetails={showDetails} />
       </InfoLine>
       {showDetails && (
         <>
           <InfoLine>
-            <Text type="SUPPORTING">Exchange fee</Text>
+            <Text type="SUPPORTING">Virt / fact balance </Text>
             <Text color={theme.colors.textPrimary} type="BODY">
-              <Text primary>{exchangeFee.toSignificant(2)}$</Text>
+              <Text primary>{`${virtualBalance.toSignificant(2)} / ${factBalance.toSignificant(2)}`}</Text>
             </Text>
           </InfoLine>
           <InfoLine>
-            <Text type="SUPPORTING">Matcher fee</Text>
+            <Text type="SUPPORTING">Min / max price </Text>
             <Text color={theme.colors.textPrimary} type="BODY">
-              <Text primary>{matcherFee.toSignificant(2)}$</Text>
+              <Text primary>{`${minPrice.toSignificant(2)} / ${maxPrice.toSignificant(2)}`}</Text>
             </Text>
-          </InfoLine>
-          <InfoLine>
-            <Text type="SUPPORTING">Slippage tolerance</Text>
-            <LeftBlock>
-              <Text color={theme.colors.textPrimary} type="BODY">
-                {slippage}%
-              </Text>
-              <Icon onClick={() => setSlippageSettingOpen(!isSlippageSettingOpen)} />
-            </LeftBlock>
           </InfoLine>
         </>
-      )}
-
-      {isSlippageSettingOpen && (
-        <SlippageSettings saveSlippage={updateSlippage} onClose={() => setSlippageSettingOpen(false)} />
       )}
     </Root>
   );
@@ -111,16 +82,6 @@ const ArrowUpIconStyled = styled(ArrowUpIcon)<{ showDetails: boolean }>`
   transition: 300ms ease-in-out;
 `;
 
-const SnackStyled = styled.span`
-  border-radius: 33px;
-  background: rgba(0, 227, 136, 0.15);
-  display: flex;
-  padding: 2px 6px;
-  margin-left: 11px;
-  margin-right: 8px;
-  ${TEXT_TYPES_MAP.BODY}
-`;
-
 const InfoLine = styled(Text)`
   width: 100%;
   display: flex;
@@ -135,20 +96,5 @@ const InfoLine = styled(Text)`
     ${ArrowUpIconStyled} {
       transform: rotate(-90deg);
     }
-  }
-`;
-
-const LeftBlock = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const Icon = styled(SettingsIcon)`
-  cursor: pointer;
-  color: ${({ theme }) => `${theme.colors.textSecondary}`};
-  transition: 0.4s;
-  &:hover {
-    color: ${({ theme }) => `${theme.colors.textPrimary}`};
   }
 `;
