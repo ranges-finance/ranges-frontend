@@ -49,10 +49,14 @@ class SwapStore {
     return this.rootStore.oracleStore.getTokenIndexPrice(this.buyToken.priceFeed);
   }
 
-  private initializeRangePoolQueriesService() {
+  private async initializeRangePoolQueriesService() {
     try {
       const networkConfig = NetworkConfig[NETWORKS.SEPOLIA];
       this.rangePoolQueriesService = new RangePoolQueriesService(networkConfig.rangePoolQueriesAddress, wagmiConfig);
+
+      // Fetch virtual balances
+      const virtualBalances = await this.fetchVirtualBalances();
+      console.log("Virtual Balances:", virtualBalances);
 
       // Создаем дебаунсированную функцию для получения котировки
       this.debouncedGetQuote = debounceAsync(this.getQuote.bind(this), 500);
@@ -335,6 +339,28 @@ class SwapStore {
   //     payAmount = buyTokenPrice.times(value).div(sellTokenPrice).toString();
   //   }
   //   this.payAmount = payAmount;
+  // }
+
+  async fetchVirtualBalances() {
+    if (!this.rangePoolQueriesService) return [];
+    try {
+      const poolAddress = NetworkConfig[NETWORKS.SEPOLIA].poolAddress;
+      return await this.rangePoolQueriesService.getVirtualBalances(poolAddress);
+    } catch (error) {
+      console.error("Error fetching virtual balances:", error);
+      return [];
+    }
+  }
+
+  // async fetchPoolTokens() {
+  //   if (!this.vaultService) return { balances: [], tokens: [] };
+  //   try {
+  //     const poolId = await this.getPoolId();
+  //     return await this.vaultService.getPoolTokens(poolId);
+  //   } catch (error) {
+  //     console.error("Error fetching pool tokens:", error);
+  //     return { balances: [], tokens: [] };
+  //   }
   // }
 }
 
