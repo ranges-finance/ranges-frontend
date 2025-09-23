@@ -2,7 +2,7 @@
   "name": "ranges-frontend",
   "version": "0.0.1",
   "private": true,
-  "homepage": "https://chlenc.github.io/ranges",
+  "homepage": "https://ranges.finance",
   "scripts": {
     "start": "vite --open",
     "dev": "vite --open",
