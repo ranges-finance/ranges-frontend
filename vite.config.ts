@@ -21,7 +21,7 @@ const COMMIT_HASH = getCommitHash();
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/ranges/",
+  base: "/",
   build: {
     outDir: OUT_DIR,
     sourcemap: false,
