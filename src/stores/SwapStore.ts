@@ -362,6 +362,26 @@ class SwapStore {
   //     return { balances: [], tokens: [] };
   //   }
   // }
+
+  get assetsWithLeverage() {
+    // const withLeverage = this.assets.map(({ balance, factBalance, ...rest }) => ({
+    //   ...rest,
+    //   leverage: balance.div(factBalance),
+    //   reversedLeverage: factBalance.div(balance),
+    //   balance,
+    //   factBalance
+    // }));
+
+    // const maxLeverage = withLeverage.reduce((acc, { reversedLeverage }) => BN.max(acc, reversedLeverage), BN.ZERO);
+
+    // return withLeverage.map((asset) => ({
+    //   ...asset,
+    //   reversedLeverage: asset.reversedLeverage.times(100).toNumber(),
+    //   relativeReversedLeverage: asset.reversedLeverage.div(maxLeverage).times(100).plus(10).toNumber()
+    // }));
+
+    return [];
+  }
 }
 
 export default SwapStore;

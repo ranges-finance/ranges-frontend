@@ -222,6 +222,7 @@ export const SwapScreen: React.FC = observer(() => {
           </ConnectWalletButtonStyled>
         </SmartFlexStyled>
       </SwapButtonSkeletonWrapper>
+      {/* <RangeChart assetsWithLeverage={swapStore.assetsWithLeverage} size={120} /> */}
     </Root>
   );
 });
