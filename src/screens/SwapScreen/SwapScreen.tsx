@@ -26,6 +26,7 @@ import SwapButtonSkeletonWrapper from "../../components/Skeletons/SwapButtonSkel
 import SwapSkeletonWrapper from "../../components/Skeletons/SwapSkeletonWrapper";
 
 import { BalanceSection } from "./BalanceSection";
+import { InfoBlock } from "./InfoBlock";
 import { TokenSelect } from "./TokenSelect";
 
 export const SwapScreen: React.FC = observer(() => {
@@ -131,6 +132,8 @@ export const SwapScreen: React.FC = observer(() => {
           Swap one token for another directly inside the defined liquidity ranges.
         </Text>
       </Text>
+      {/* <InfoIcon src={infoIcon} alt="info" onClick={() => setShowInfo(true)} /> */}
+
       <SwapSkeletonWrapper isReady={true}>
         <SwapContainer>
           <SwapBox>
@@ -197,6 +200,7 @@ export const SwapScreen: React.FC = observer(() => {
           </SwapBox>
         </SwapContainer>
       </SwapSkeletonWrapper>
+      <InfoBlock />
       <SwapButtonSkeletonWrapper isReady={true}>
         <SmartFlexStyled>
           <ConnectWalletButtonStyled connectText="Connect wallet to start trading" targetKey="swap_connect_btn">
@@ -218,6 +222,7 @@ export const SwapScreen: React.FC = observer(() => {
           </ConnectWalletButtonStyled>
         </SmartFlexStyled>
       </SwapButtonSkeletonWrapper>
+      {/* <RangeChart assetsWithLeverage={swapStore.assetsWithLeverage} size={120} /> */}
     </Root>
   );
 });

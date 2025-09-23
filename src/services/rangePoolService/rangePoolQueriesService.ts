@@ -116,4 +116,27 @@ export class RangePoolQueriesService {
       throw new Error(`Failed to get swap info: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
+
+  /**
+   * Получить виртуальные балансы
+   */
+  async getVirtualBalances(poolAddress: string): Promise<{ virtualBalanceIn: bigint; virtualBalanceOut: bigint }> {
+    try {
+      const result = await readContract(this.publicClient, {
+        address: this.queriesAddress,
+        abi: RANGE_POOL_QUERIES_ABI,
+        functionName: "getVirtualBalances",
+        args: [poolAddress as `0x${string}`],
+      });
+
+      const resultArray = result as bigint[];
+      return {
+        virtualBalanceIn: resultArray[0],
+        virtualBalanceOut: resultArray[1],
+      };
+    } catch (error) {
+      console.error("Error calling getVirtualBalances:", error);
+      throw new Error(`Failed to get virtual balances: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  }
 }

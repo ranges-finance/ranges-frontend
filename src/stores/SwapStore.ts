@@ -49,10 +49,14 @@ class SwapStore {
     return this.rootStore.oracleStore.getTokenIndexPrice(this.buyToken.priceFeed);
   }
 
-  private initializeRangePoolQueriesService() {
+  private async initializeRangePoolQueriesService() {
     try {
       const networkConfig = NetworkConfig[NETWORKS.SEPOLIA];
       this.rangePoolQueriesService = new RangePoolQueriesService(networkConfig.rangePoolQueriesAddress, wagmiConfig);
+
+      // Fetch virtual balances
+      const virtualBalances = await this.fetchVirtualBalances();
+      console.log("Virtual Balances:", virtualBalances);
 
       // Создаем дебаунсированную функцию для получения котировки
       this.debouncedGetQuote = debounceAsync(this.getQuote.bind(this), 500);
@@ -336,6 +340,48 @@ class SwapStore {
   //   }
   //   this.payAmount = payAmount;
   // }
+
+  async fetchVirtualBalances() {
+    if (!this.rangePoolQueriesService) return [];
+    try {
+      const poolAddress = NetworkConfig[NETWORKS.SEPOLIA].poolAddress;
+      return await this.rangePoolQueriesService.getVirtualBalances(poolAddress);
+    } catch (error) {
+      console.error("Error fetching virtual balances:", error);
+      return [];
+    }
+  }
+
+  // async fetchPoolTokens() {
+  //   if (!this.vaultService) return { balances: [], tokens: [] };
+  //   try {
+  //     const poolId = await this.getPoolId();
+  //     return await this.vaultService.getPoolTokens(poolId);
+  //   } catch (error) {
+  //     console.error("Error fetching pool tokens:", error);
+  //     return { balances: [], tokens: [] };
+  //   }
+  // }
+
+  get assetsWithLeverage() {
+    // const withLeverage = this.assets.map(({ balance, factBalance, ...rest }) => ({
+    //   ...rest,
+    //   leverage: balance.div(factBalance),
+    //   reversedLeverage: factBalance.div(balance),
+    //   balance,
+    //   factBalance
+    // }));
+
+    // const maxLeverage = withLeverage.reduce((acc, { reversedLeverage }) => BN.max(acc, reversedLeverage), BN.ZERO);
+
+    // return withLeverage.map((asset) => ({
+    //   ...asset,
+    //   reversedLeverage: asset.reversedLeverage.times(100).toNumber(),
+    //   relativeReversedLeverage: asset.reversedLeverage.div(maxLeverage).times(100).plus(10).toNumber()
+    // }));
+
+    return [];
+  }
 }
 
 export default SwapStore;
