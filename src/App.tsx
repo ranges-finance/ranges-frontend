@@ -7,6 +7,7 @@ import Header from "@components/Header";
 
 import { useClearUrlParam } from "@hooks/useClearUrlParam";
 
+import { Footer } from "@screens/Footer";
 import { SwapScreen } from "@screens/SwapScreen";
 
 import "@rainbow-me/rainbowkit/styles.css";
@@ -22,6 +23,7 @@ const App: React.FC = observer(() => {
     <Root>
       <Header />
       <SwapScreen />
+      <Footer />
     </Root>
   );
 });
