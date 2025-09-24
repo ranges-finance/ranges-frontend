@@ -53,35 +53,20 @@ export async function fetchRangePoolData(
       transport: http(),
     });
 
-    // Простые отдельные запросы без мультиколла
-    // 1. Получаем poolId
-    const poolId = (await client.readContract({
-      address: networkConfig.poolAddress,
-      abi: RANGE_POOL_ABI,
-      functionName: "getPoolId",
-      args: [],
-    })) as `0x${string}`;
-
-    // 2. Получаем виртуальные балансы
-    const virtualBalances = (await client.readContract({
-      address: networkConfig.poolAddress,
-      abi: RANGE_POOL_ABI,
-      functionName: "getVirtualBalances",
-      args: [],
-    })) as bigint[];
-
-    // 3. Получаем фактические балансы и токены
-    const actualBalancesResult = await client.readContract({
-      address: networkConfig.vaultAddress,
-      abi: VAULT_ABI,
-      functionName: "getPoolTokens",
-      args: [poolId],
-    });
-
-    const [tokens, actualBalances] = actualBalancesResult as [Address[], bigint[], bigint];
-
-    // 4. Получаем реальные цены через RangePoolQueries
-    const [minPrice, maxPrice] = await Promise.all([
+    // Батчим независимые запросы для оптимизации
+    const [poolId, virtualBalances, minPrice, maxPrice] = await Promise.all([
+      client.readContract({
+        address: networkConfig.poolAddress,
+        abi: RANGE_POOL_ABI,
+        functionName: "getPoolId",
+        args: [],
+      }) as Promise<`0x${string}`>,
+      client.readContract({
+        address: networkConfig.poolAddress,
+        abi: RANGE_POOL_ABI,
+        functionName: "getVirtualBalances",
+        args: [],
+      }) as Promise<bigint[]>,
       client.readContract({
         address: networkConfig.rangePoolQueriesAddress,
         abi: RANGE_POOL_QUERIES_ABI,
@@ -95,6 +80,16 @@ export async function fetchRangePoolData(
         args: [networkConfig.poolAddress, tokenA, tokenB],
       }) as Promise<bigint>,
     ]);
+
+    // Получаем фактические балансы и токены (этот запрос зависит от poolId)
+    const actualBalancesResult = await client.readContract({
+      address: networkConfig.vaultAddress,
+      abi: VAULT_ABI,
+      functionName: "getPoolTokens",
+      args: [poolId],
+    });
+
+    const [tokens, actualBalances] = actualBalancesResult as [Address[], bigint[], bigint];
 
     const poolData = {
       tokens,
