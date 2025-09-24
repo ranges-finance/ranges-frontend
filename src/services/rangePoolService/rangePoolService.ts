@@ -2,7 +2,7 @@ import { getContract } from "viem";
 import type { Config } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
 
-import { RANGE_POOL_ABI } from "./rangePoolABI";
+import { RANGE_POOL_ABI } from "../../abi/rangePoolABI";
 
 export class RangePoolService {
   private poolAddress: string;

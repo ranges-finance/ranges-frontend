@@ -3,7 +3,7 @@ import type { Config } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
 import { writeContract } from "wagmi/actions";
 
-import { VAULT_ABI } from "./vaultABI";
+import { VAULT_ABI } from "../../abi/vaultABI";
 
 export interface SwapParams {
   poolId: string;

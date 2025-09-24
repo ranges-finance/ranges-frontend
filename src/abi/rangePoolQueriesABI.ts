@@ -251,6 +251,93 @@ export const RANGE_POOL_QUERIES_ABI = [
         type: "address",
       },
       {
+        internalType: "address",
+        name: "tokenA",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "tokenB",
+        type: "address",
+      },
+    ],
+    name: "getMaxPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "maxPrice",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "poolAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "tokenA",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "tokenB",
+        type: "address",
+      },
+    ],
+    name: "getMinPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "minPrice",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "poolAddress",
+        type: "address",
+      },
+    ],
+    name: "getPoolBalances",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "tokens",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "balances",
+        type: "uint256[]",
+      },
+      {
+        internalType: "bytes32",
+        name: "poolId",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "poolAddress",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "amountIn",
         type: "uint256",

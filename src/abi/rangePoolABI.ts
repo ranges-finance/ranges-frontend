@@ -977,7 +977,7 @@ export const RANGE_POOL_ABI = [
         type: "uint256[]",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -1031,7 +1031,7 @@ export const RANGE_POOL_ABI = [
         type: "uint256[]",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
   {

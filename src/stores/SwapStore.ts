@@ -5,6 +5,7 @@ import { getPublicClient, waitForTransactionReceipt, writeContract } from "wagmi
 import { NetworkConfig, NETWORKS } from "@constants/networkConfig";
 import { wagmiConfig } from "@constants/wagmiConfig";
 import { debounceAsync } from "@utils/debounce";
+import { FormattedPoolData, getRangePoolData } from "@utils/rangePoolDataFetcher";
 
 import { Token } from "@entity";
 
@@ -29,6 +30,10 @@ class SwapStore {
   private vaultService: VaultService | null = null;
   private debouncedGetQuote: (() => void) | null = null;
 
+  // Данные пула
+  poolData: FormattedPoolData | null = null;
+  isPoolDataLoading: boolean = false;
+
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
 
@@ -40,6 +45,11 @@ class SwapStore {
 
     this.initializeRangePoolQueriesService();
     this.initializeVaultService();
+
+    // Загружаем данные пула при инициализации
+    this.fetchPoolData();
+
+    this.setPayAmount("100");
   }
 
   get sellTokenPrice() {
@@ -53,10 +63,6 @@ class SwapStore {
     try {
       const networkConfig = NetworkConfig[NETWORKS.SEPOLIA];
       this.rangePoolQueriesService = new RangePoolQueriesService(networkConfig.rangePoolQueriesAddress, wagmiConfig);
-
-      // Fetch virtual balances
-      const virtualBalances = await this.fetchVirtualBalances();
-      console.log("Virtual Balances:", virtualBalances);
 
       // Создаем дебаунсированную функцию для получения котировки
       this.debouncedGetQuote = debounceAsync(this.getQuote.bind(this), 500);
@@ -251,18 +257,23 @@ class SwapStore {
         hash: hash,
       });
 
+      // Обновляем данные пула после успешного свапа
+      await this.fetchPoolData();
+
       // Обновляем балансы после успешного свапа
       await this.rootStore.balanceStore.updateTokenBalances();
 
       // Сбрасываем суммы
-      this.setPayAmount("0.00");
-      this.receiveAmount = "0.00";
+      this.setPayAmount("100");
     } catch (err) {
       console.error("Error during swap:", err);
       this.rootStore.notificationStore.error({
         text: "Error during swap",
         error: err instanceof Error ? err.message : "Unknown error",
       });
+
+      // Обновляем данные пула даже при ошибке, чтобы показать актуальное состояние
+      await this.fetchPoolData();
     } finally {
       this.setIsLoading(false);
       this.setIsSwapping(false);
@@ -273,17 +284,19 @@ class SwapStore {
     const tempToken = this.sellToken;
     this.setSellToken(this.buyToken as Token);
     this.setBuyToken(tempToken as Token);
-    this.setPayAmount("0.00");
+    this.setPayAmount("100");
+    this.fetchPoolData();
   };
 
   setIsLoading = (value: boolean) => (this.isLoading = value);
   setIsQuoteLoading = (value: boolean) => (this.isQuoteLoading = value);
   setIsApproving = (value: boolean) => (this.isApproving = value);
   setIsSwapping = (value: boolean) => (this.isSwapping = value);
+  setIsPoolDataLoading = (value: boolean) => (this.isPoolDataLoading = value);
 
   setSellToken(token: Token) {
     if (this.sellToken.symbol === token.symbol) return;
-    this.setPayAmount("0.00");
+    this.setPayAmount("100");
 
     if (this.buyToken.symbol === token.symbol) {
       const prevSellToken = this.sellToken;
@@ -294,11 +307,12 @@ class SwapStore {
     }
 
     this.sellToken = token;
+    this.fetchPoolData();
   }
 
   setBuyToken(token: Token) {
     if (this.buyToken.symbol === token.symbol) return;
-    this.setPayAmount("0.00");
+    this.setPayAmount("100");
 
     if (this.sellToken.symbol === token.symbol) {
       const prevBuyToken = this.buyToken;
@@ -309,6 +323,94 @@ class SwapStore {
     }
 
     this.buyToken = token;
+    this.fetchPoolData();
+  }
+
+  // Метод для получения данных пула
+  fetchPoolData = async () => {
+    try {
+      this.setIsPoolDataLoading(true);
+
+      const networkConfig = NetworkConfig[NETWORKS.SEPOLIA];
+      const tokens = Object.values(networkConfig.tokens);
+
+      const poolData = await getRangePoolData(networkConfig, tokens, this.sellToken.address!, this.buyToken.address!);
+
+      if (poolData) {
+        this.poolData = poolData;
+      } else {
+        console.warn("Failed to load pool data - returned null");
+        this.poolData = null;
+      }
+    } catch (error) {
+      console.error("Error fetching pool data:", error);
+      this.poolData = null;
+
+      // Показываем уведомление пользователю только если это не первая загрузка
+      if (this.poolData !== undefined) {
+        this.rootStore.notificationStore.error({
+          text: "Failed to load pool data. Please try again.",
+        });
+      }
+    } finally {
+      this.setIsPoolDataLoading(false);
+    }
+  };
+
+  // Геттер для exchange rate
+  get exchangeRate() {
+    // Если нет данных по суммам, возвращаем null
+    const pay = parseFloat(this.payAmount);
+    const receive = parseFloat(this.receiveAmount);
+
+    if (!pay || !receive || pay === 0 || receive === 0) {
+      return null;
+    }
+
+    // Курс обмена = сколько получаем за 1 единицу продаваемого токена
+    return receive / pay;
+  }
+
+  // Геттеры для виртуальных и фактических балансов
+  get virtualBalance() {
+    if (!this.poolData) return null;
+    // Находим индекс sellToken в массиве токенов пула
+    const tokenIndex = this.poolData.tokens.findIndex((token) => token === this.sellToken.address);
+    if (tokenIndex === -1) return null;
+    return this.poolData.virtualBalances[tokenIndex] || null;
+  }
+
+  get factBalance() {
+    if (!this.poolData) return null;
+    // Находим индекс sellToken в массиве токенов пула
+    const tokenIndex = this.poolData.tokens.findIndex((token) => token === this.sellToken.address);
+    if (tokenIndex === -1) return null;
+    return this.poolData.actualBalances[tokenIndex] || null;
+  }
+
+  get minPrice() {
+    if (!this.poolData) return null;
+    return this.poolData.minPrice === 0 ? null : this.poolData.minPrice;
+  }
+
+  get maxPrice() {
+    if (!this.poolData) return null;
+    return this.poolData.maxPrice === 0 ? null : this.poolData.maxPrice;
+  }
+
+  // Геттер для отладки - показывает токены пула
+  get poolTokens() {
+    return this.poolData?.tokens || [];
+  }
+
+  // Геттер для отладки - показывает все виртуальные балансы
+  get allVirtualBalances() {
+    return this.poolData?.virtualBalances || [];
+  }
+
+  // Геттер для отладки - показывает все фактические балансы
+  get allActualBalances() {
+    return this.poolData?.actualBalances || [];
   }
 
   setPayAmount(value: string) {
@@ -325,6 +427,7 @@ class SwapStore {
       this.debouncedGetQuote();
     } else {
       // Fallback к старой логике, если сервис не инициализирован
+      console.warn("RangePoolQueriesService not initialized, using fallback pricing");
       this.fallbackToPriceCalculation();
     }
   }
@@ -341,16 +444,16 @@ class SwapStore {
   //   this.payAmount = payAmount;
   // }
 
-  async fetchVirtualBalances() {
-    if (!this.rangePoolQueriesService) return [];
-    try {
-      const poolAddress = NetworkConfig[NETWORKS.SEPOLIA].poolAddress;
-      return await this.rangePoolQueriesService.getVirtualBalances(poolAddress);
-    } catch (error) {
-      console.error("Error fetching virtual balances:", error);
-      return [];
-    }
-  }
+  // async fetchVirtualBalances() {
+  //   if (!this.rangePoolQueriesService) return [];
+  //   try {
+  //     const poolAddress = NetworkConfig[NETWORKS.SEPOLIA].poolAddress;
+  //     return await this.rangePoolQueriesService.getVirtualBalances(poolAddress);
+  //   } catch (error) {
+  //     console.error("Error fetching virtual balances:", error);
+  //     return [];
+  //   }
+  // }
 
   // async fetchPoolTokens() {
   //   if (!this.vaultService) return { balances: [], tokens: [] };
